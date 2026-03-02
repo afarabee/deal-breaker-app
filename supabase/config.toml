@@ -1,0 +1,4 @@
+project_id = "soksrmsnhmhqjgawktfi"
+
+[functions.analyze-deal]
+verify_jwt = false
