@@ -130,9 +130,9 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={onBack} className="border-input-border">← Back</Button>
-          <button onClick={onStartOver} className="text-sm text-primary hover:text-primary/80 font-medium">Start Over</button>
+          <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
         </div>
-        <Button onClick={onSubmit}>Break This Deal 🔥</Button>
+        <Button onClick={onSubmit} variant="success">Break This Deal 🔥</Button>
       </div>
     </motion.div>
   );

@@ -12,7 +12,7 @@ interface Props {
 }
 
 const statusColor = (s: "red" | "yellow" | "green") => {
-  if (s === "red") return { bg: "bg-primary/20", text: "text-primary", border: "border-l-primary", label: "Push Back" };
+  if (s === "red") return { bg: "bg-destructive/20", text: "text-destructive", border: "border-l-destructive", label: "Push Back" };
   if (s === "yellow") return { bg: "bg-warning/20", text: "text-warning", border: "border-l-warning", label: "Review" };
   return { bg: "bg-success/20", text: "text-success", border: "border-l-success", label: "Fair" };
 };
@@ -20,7 +20,7 @@ const statusColor = (s: "red" | "yellow" | "green") => {
 const gradeColor = (grade: string) => {
   if (grade.startsWith("A")) return "text-success";
   if (grade.startsWith("B")) return "text-warning";
-  return "text-primary";
+  return "text-destructive";
 };
 
 const AnimatedScore = ({ grade }: { grade: string }) => {
@@ -89,7 +89,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       <div className="text-center py-6">
         <AnimatedScore grade={report.dealScore} />
         <p className="text-sm text-muted-foreground mt-2">
-          {redCount > 0 && <span className="text-primary">{redCount} issue{redCount > 1 ? "s" : ""} to push back on</span>}
+          {redCount > 0 && <span className="text-destructive">{redCount} issue{redCount > 1 ? "s" : ""} to push back on</span>}
           {redCount > 0 && yellowCount > 0 && " · "}
           {yellowCount > 0 && <span className="text-warning">{yellowCount} item{yellowCount > 1 ? "s" : ""} to review</span>}
           {redCount === 0 && yellowCount === 0 && <span className="text-success">Clean deal — no major issues found</span>}
@@ -153,16 +153,16 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       {/* Negotiation Scripts */}
       {report.negotiationScripts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-sm font-heading text-primary uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
+          <h3 className="text-sm font-heading text-destructive uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
           {report.negotiationScripts.map((script, i) => (
             <motion.div
               key={script.item}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
-              className="rounded-lg bg-primary/10 border border-primary/20 p-4"
+              className="rounded-lg bg-destructive/10 border border-destructive/20 p-4"
             >
-              <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">{script.item}</p>
+              <p className="text-xs text-destructive font-semibold uppercase tracking-wider mb-2">{script.item}</p>
               <p className="text-sm text-foreground italic leading-relaxed">"{script.script}"</p>
             </motion.div>
           ))}
@@ -177,7 +177,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
           transition={{ delay: 1.3, duration: 0.4 }}
           className="rounded-lg p-6 text-center"
           style={{
-            background: "linear-gradient(135deg, hsl(147, 52%, 36%), hsl(147, 52%, 28%))",
+            background: "linear-gradient(135deg, hsl(150, 100%, 39%), hsl(150, 100%, 28%))",
           }}
         >
           <p className="text-xs text-success-foreground/80 uppercase tracking-wider mb-1">Potential Savings</p>
@@ -189,7 +189,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={onEditDeal} className="border-input-border">← Edit Deal</Button>
-          <button onClick={onStartOver} className="text-sm text-primary hover:text-primary/80 font-medium">Start Over</button>
+          <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
         </div>
         <Button onClick={handleShare} variant="outline" className="border-input-border">
           <Share2 className="h-4 w-4 mr-1" /> Share

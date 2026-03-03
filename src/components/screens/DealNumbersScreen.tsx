@@ -93,8 +93,8 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       </div>
 
       {/* Warning callout */}
-      <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 flex gap-3">
+        <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
         <p className="text-sm text-foreground">
           Never negotiate on monthly payment. Always negotiate on total price, trade value, and interest rate separately.
         </p>
@@ -103,7 +103,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={onBack} className="border-input-border">← Back</Button>
-          <button onClick={onStartOver} className="text-sm text-primary hover:text-primary/80 font-medium">Start Over</button>
+          <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
         </div>
         <Button onClick={onNext}>Next: Fees →</Button>
       </div>
