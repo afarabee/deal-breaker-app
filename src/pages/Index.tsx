@@ -8,6 +8,7 @@ import ReportScreen from "@/components/screens/ReportScreen";
 import { VehicleInfo, DealNumbers, FeeBreakdown, DealData, DealReport } from "@/types/deal";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useRef } from "react";
 
 const emptyVehicle: VehicleInfo = { condition: "", year: "", make: "", model: "", trim: "", state: "", dealershipName: "" };
 const emptyNumbers: DealNumbers = { sellingPrice: "", tradeInValue: "", tradePayoff: "", downPayment: "", interestRate: "", loanTerm: "" };
@@ -30,12 +31,28 @@ const Index = () => {
     setReport(null);
   };
 
+  const pendingPreset = useRef<DealData | null>(null);
+
+  const handlePresetSelect = (preset: DealData) => {
+    setVehicle(preset.vehicle);
+    setNumbers(preset.numbers);
+    setFees(preset.fees);
+    pendingPreset.current = preset;
+    // Set step to 3 first (where analyzeDeal would normally be called from), then trigger analysis
+    setStep(4);
+    setLoading(true);
+    setReport(null);
+    runAnalysis(preset);
+  };
+
   const analyzeDeal = async () => {
     setStep(4);
     setLoading(true);
     setReport(null);
+    runAnalysis({ vehicle, numbers, fees });
+  };
 
-    const dealData: DealData = { vehicle, numbers, fees };
+  const runAnalysis = async (dealData: DealData) => {
 
     try {
       const { data, error } = await supabase.functions.invoke("analyze-deal", {
@@ -69,6 +86,7 @@ const Index = () => {
                 data={vehicle}
                 onChange={setVehicle}
                 onNext={() => setStep(2)}
+                onPresetSelect={handlePresetSelect}
               />
             )}
             {step === 2 && (
