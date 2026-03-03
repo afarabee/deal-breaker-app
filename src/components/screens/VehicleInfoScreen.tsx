@@ -1,5 +1,6 @@
-import { VehicleInfo } from "@/types/deal";
+import { VehicleInfo, DealData } from "@/types/deal";
 import { MAKES_MODELS, US_STATES } from "@/data/vehicleData";
+import { PRESET_A, PRESET_C, PRESET_F } from "@/data/presetDeals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -8,9 +9,16 @@ interface Props {
   data: VehicleInfo;
   onChange: (data: VehicleInfo) => void;
   onNext: () => void;
+  onPresetSelect: (preset: DealData) => void;
 }
 
-const VehicleInfoScreen = ({ data, onChange, onNext }: Props) => {
+const presets = [
+  { label: "A Deal", data: PRESET_A, dotClass: "bg-emerald-500" },
+  { label: "C Deal", data: PRESET_C, dotClass: "bg-amber-500" },
+  { label: "F Deal", data: PRESET_F, dotClass: "bg-destructive" },
+];
+
+const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) => {
   const makes = Object.keys(MAKES_MODELS);
   const models = data.make ? MAKES_MODELS[data.make] || [] : [];
   const canProceed = data.condition && data.make && data.model;
@@ -35,6 +43,22 @@ const VehicleInfoScreen = ({ data, onChange, onNext }: Props) => {
       <div>
         <h2 className="text-xl font-heading text-foreground">Your Vehicle</h2>
         <p className="text-sm text-muted-foreground mt-1">Tell us about the vehicle you're looking at.</p>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground tracking-wide">Try a sample deal →</p>
+        <div className="flex gap-2">
+          {presets.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => onPresetSelect(p.data)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-input-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+            >
+              <span className={`w-2 h-2 rounded-full ${p.dotClass}`} />
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
