@@ -154,6 +154,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       <Button
         onClick={onNext}
         disabled={!canProceed}
+        variant="success"
         className="w-full h-12 text-base font-semibold"
       >
         Analyze My Deal →
