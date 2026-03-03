@@ -12,7 +12,7 @@ const DealHeader = ({ currentStep }: DealHeaderProps) => {
       <div className="flex items-center justify-center mb-6">
         <h1 className="text-2xl font-heading tracking-tight">
           <span className="text-foreground">DEAL</span>
-          <span className="text-brand">BREAKER</span>
+          <span className="text-success">BREAKER</span>
         </h1>
       </div>
       <div className="flex items-center justify-center gap-2">

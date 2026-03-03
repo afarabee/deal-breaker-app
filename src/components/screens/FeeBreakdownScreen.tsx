@@ -49,7 +49,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-6 card-glow rounded-xl p-5 bg-card/50 border border-border/50"
     >
       <div>
         <h2 className="text-xl font-heading text-foreground">Fee Breakdown</h2>
