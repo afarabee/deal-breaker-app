@@ -13,6 +13,7 @@ const DealHeader = ({ currentStep }: DealHeaderProps) => {
         <h1 className="text-2xl font-heading tracking-tight">
           <span className="text-foreground">DEAL</span>
           <span className="text-success">BREAKER</span>
+          <span className="ml-2">🥊</span>
         </h1>
       </div>
       <div className="flex items-center justify-center gap-2">
@@ -24,8 +25,8 @@ const DealHeader = ({ currentStep }: DealHeaderProps) => {
             animate={{
               width: step <= currentStep ? 32 : 20,
               backgroundColor: step <= currentStep
-                ? "hsl(190, 100%, 50%)"
-                : "hsl(215, 15%, 18%)",
+                ? "hsl(142, 71%, 45%)"
+                : "hsl(220, 13%, 87%)",
             }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           />

@@ -1,83 +1,58 @@
 
 
-# Complete Redesign — Light Theme with Playful, Emoji-Rich UI
+# DealBreaker — AI-Powered Car Deal Auditor
 
-The reference mockup is a **fundamentally different aesthetic** from the current dark-tech theme. It's a **light, white, playful** design with bright colors, emojis, white input fields, yellow caution-tape warning, and a colorful report screen. This is a full visual overhaul.
+## Overview
+A 4-screen stateless web app where users enter car deal details and receive an AI-powered forensic report scoring every line item, providing negotiation scripts, and calculating potential savings. Dark fintech aesthetic with aggressive, confident branding.
 
-## What the reference shows
+## Design System
+- **Dark theme**: Near-black background (#0D0D0D), dark cards (#1A1A1A), subtle borders (#2A2A2A)
+- **Brand red accent** (#E63946) for CTAs, warnings, and the BREAKER logo
+- **Traffic light system**: Red (#E63946) for push back, Amber (#D4A017) for review, Green (#2D8B4E) for fair
+- **Typography**: Archivo Black for headings/logo, DM Sans for body text
+- **Animations**: Framer Motion for screen transitions, staggered card reveals, count-up score animation, input focus glows, and progress bar transitions
+- **Mobile-first layout**: Max-width 420px centered on desktop, full-width on mobile
 
-- **Light/white background** — not dark
-- **White input fields** with light gray borders and pencil ✏️ icons
-- **Colorful preset buttons** — green "A Deal", amber "C Deal", red "F Deal" with checkmark/exclamation icons
-- **Yellow caution-tape warning** — bold black text on bright yellow, hazard stripes
-- **Emojis everywhere** — section headings, labels, buttons
-- **Green CTA buttons** with rounded styling
-- **Report screen** — pink/red background for bad grades, large emoji, colorful metric cards (green/amber/red backgrounds), blue negotiation scripts section
-- **"Massive amount" savings callout** in a big green rounded card with upward arrow emoji
-- **Edit Deal / Start Over / Share buttons** as clean outlined buttons at the bottom
+## Screen 1: Vehicle Info
+- Logo header with animated 4-segment progress bar (segment 1 active)
+- Section title "Your Vehicle" with subtitle
+- Form fields: New/Used dropdown + Year input (side by side), Make dropdown + Model dropdown (filtered by make, side by side), Trim dropdown/input, Dealership State dropdown, optional Dealership Name text input
+- Pre-populated dropdowns for all major US makes with model filtering
+- "Analyze My Deal →" button disabled until Condition + Make + Model are filled
 
-## Files to change
+## Screen 2: Deal Numbers
+- Progress bar advances to segment 2
+- Fields: Selling Price ($), Trade-In Value + Trade Payoff (side by side, $), Down Payment ($), Interest Rate (% suffix) + Loan Term dropdown (side by side)
+- Red warning callout box after rate/term: "Never negotiate on monthly payment..."
+- Navigation: ← Back + Start Over (left), Next: Fees → (right)
 
-### 1. `src/index.css` — Full light theme
-- Swap ALL CSS variables to light mode:
-  - `--background`: white (`0 0% 100%`)
-  - `--foreground`: dark gray (`220 20% 15%`)
-  - `--card`: white or very light gray
-  - `--secondary`: light gray (`220 15% 96%`) for field backgrounds
-  - `--muted-foreground`: medium gray for labels
-  - `--border`: light gray borders
-  - `--primary`: keep cyan or shift to a vivid blue
-  - `--success`: vibrant green
-  - `--destructive`: true red
-  - `--warning`: bright yellow
-- Remove the dark ambient glow animation and body::after pseudo-element
-- Remove dark `card-glow` effect, replace with subtle light shadow
-- Remove dark radial gradient backgrounds on body
+## Screen 3: Fee Breakdown
+- Progress bar advances to segment 3
+- Two grouped cards:
+  - **Standard Fees**: Doc/Admin Fee, Sales Tax, Registration/Title/License
+  - **Dealer Add-Ons & F&I Products**: Anti-Theft/Etch, Extended Warranty, GAP Coverage, Maintenance Contract, dynamic custom fee rows with "+ Add Another Fee" button
+- Navigation: ← Back + Start Over (left), "Break This Deal 🔥" (right)
 
-### 2. `src/components/DealHeader.tsx`
-- Add emoji to logo (🥊 or similar)
-- Update progress bar inactive color to light gray
-- Keep "DEAL" dark, "BREAKER" green
+## Screen 4: DealBreaker Report
+- Loading state with pulsing animation and "Analyzing your deal..." text
+- **Deal Score**: Large animated letter grade with color coding, issue/review count subtitle
+- **Three-Lever Summary**: Price, Trade (equity calculation), Rate — each in a card with color-coded status
+- **Line-by-Line Audit**: Stagger-animated cards with colored left borders, traffic light badges, AI explanations
+- **Negotiation Scripts**: Red-tinted cards with italic copy-paste scripts (only for RED items)
+- **Potential Savings**: Green gradient card with large bold savings amount
+- Navigation: ← Edit Deal + Start Over (left), Share Report 📤 (right)
 
-### 3. `src/components/screens/VehicleInfoScreen.tsx`
-- Add emojis to headings: "Your Vehicle 🚗🔑"
-- Restyle preset buttons: colored pill backgrounds (green for A, amber for C, red for F) with icons (✅, ⚠️, 🚩)
-- Add "Condition 🚗" emoji labels
-- Add pencil ✏️ icons inside input fields (right-aligned)
-- Change input styling to white bg with light borders
-- Add subtitle text below CTA: "You get clean pewter gray." style helper text
-- Update select/input classes to match light theme
+## Backend: Supabase Edge Function
+- `analyze-deal` edge function that receives deal data as JSON
+- Calls Claude API (claude-sonnet-4-20250514) with a forensic auditor system prompt
+- Returns structured JSON: deal score, line item evaluations with status/explanation, negotiation scripts, potential savings, and lever analysis
+- ANTHROPIC_API_KEY stored as a Supabase secret
+- Proper CORS headers and error handling
 
-### 4. `src/components/screens/DealNumbersScreen.tsx`
-- Add emoji to heading: "Your Deal Numbers 💵💰"
-- Replace warning callout with yellow "caution tape" style: bright yellow background, black text, hazard icon, bold text "Never negotiate on monthly payment! 🔑 Always negotiate separately!"
-- Update all input fields to white bg with light borders and pencil icons
-- Restyle navigation buttons for light theme
-
-### 5. `src/components/screens/FeeBreakdownScreen.tsx`
-- Add emojis: "Fee Breakdown 💼", "STANDARD FEES 📋💰", "DEALER ADD-ONS & F&I PRODUCTS 🔧👀"
-- Add pencil icons to inputs
-- Add 🔥 to "Break This Deal" button
-- Add helper text below CTA: "Break your pewter deal."
-- White field backgrounds, light borders
-
-### 6. `src/components/screens/ReportScreen.tsx` — Major restyle
-- Change heading to "Audit Results"
-- Add large emoji next to grade (😢 for F, 😊 for A, etc.)
-- Add pink/red background tint for bad grades behind the score section
-- Restyle three-lever cards with colored backgrounds (green card for good, amber for review, red with colored borders)
-- Add emoji labels to lever cards (🏷️ PRICE, 🔄 TRADE, 📊 RATE)
-- Restyle line-by-line audit items with "Review" and "Push Back" as small colored buttons/pills
-- Restyle negotiation scripts section with blue/light-blue background
-- Savings callout: big green rounded card with "Massive amount" text, upward arrow ⬆️ emoji, money 💰 emoji
-- Bottom buttons: "Edit Deal", "Start Over", "Share 🔗" as outlined buttons in a row
-
-### 7. `tailwind.config.ts`
-- Update brand color to match new palette
-- Remove any dark-theme-specific config
-
-### 8. `src/components/ui/button.tsx`
-- Update button variants for light theme (outline borders, hover states)
-
-This is a substantial visual overhaul touching ~8 files but preserving all existing logic, types, and data flow. No backend changes needed.
+## Key Interactions
+- Smooth animated transitions between all 4 screens (slide/fade via Framer Motion)
+- "Start Over" button on screens 2-4 resets all state and returns to screen 1
+- Share Report button on screen 4 (copy/share functionality)
+- All form state managed client-side (stateless, no database)
+- No authentication, no data persistence
 
