@@ -132,7 +132,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
           <Button variant="outline" onClick={onBack} className="border-input-border">← Back</Button>
           <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
         </div>
-        <Button onClick={onSubmit}>Break This Deal 🔥</Button>
+        <Button onClick={onSubmit} variant="success">Break This Deal 🔥</Button>
       </div>
     </motion.div>
   );
