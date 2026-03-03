@@ -75,8 +75,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-[420px] px-4 pb-8">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/[0.03] blur-[100px]" />
+      </div>
+      <div className="relative mx-auto max-w-[420px] px-4 pb-8">
         <DealHeader currentStep={step} />
         <main>
           <AnimatePresence mode="wait">
