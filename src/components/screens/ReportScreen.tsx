@@ -153,16 +153,16 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       {/* Negotiation Scripts */}
       {report.negotiationScripts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-sm font-heading text-destructive uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
+          <h3 className="text-sm font-heading text-primary uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
           {report.negotiationScripts.map((script, i) => (
             <motion.div
               key={script.item}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
-              className="rounded-lg bg-destructive/10 border border-destructive/20 p-4"
+              className="rounded-lg bg-primary/10 border border-primary/20 p-4"
             >
-              <p className="text-xs text-destructive font-semibold uppercase tracking-wider mb-2">{script.item}</p>
+              <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">{script.item}</p>
               <p className="text-sm text-foreground italic leading-relaxed">"{script.script}"</p>
             </motion.div>
           ))}

@@ -93,8 +93,8 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       </div>
 
       {/* Warning callout */}
-      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+      <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 flex gap-3">
+        <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
         <p className="text-sm text-foreground">
           Never negotiate on monthly payment. Always negotiate on total price, trade value, and interest rate separately.
         </p>
