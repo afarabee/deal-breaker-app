@@ -73,8 +73,34 @@
 
   .card-glow {
     box-shadow: 
-      0 0 0 1px hsl(190 100% 50% / 0.08),
+      0 0 0 1px hsl(190 100% 50% / 0.15),
       0 4px 24px -4px hsl(210 30% 5% / 0.6),
       0 0 40px -10px hsl(190 100% 50% / 0.05);
   }
+}
+
+/* Ambient background glow animation */
+@keyframes ambient-drift {
+  0%, 100% {
+    background-position: 30% 20%, 70% 60%;
+  }
+  33% {
+    background-position: 60% 40%, 40% 30%;
+  }
+  66% {
+    background-position: 40% 60%, 60% 80%;
+  }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 50% at 30% 20%, hsl(190 100% 50% / 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 70% 60%, hsl(150 80% 40% / 0.03) 0%, transparent 70%);
+  background-size: 200% 200%, 200% 200%;
+  animation: ambient-drift 20s ease-in-out infinite;
 }
