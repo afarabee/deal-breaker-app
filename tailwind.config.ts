@@ -45,8 +45,8 @@ export default {
           foreground: "hsl(var(--warning-foreground))",
         },
         brand: {
-          DEFAULT: "hsl(18, 65%, 47%)",
-          foreground: "hsl(0, 0%, 100%)",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",

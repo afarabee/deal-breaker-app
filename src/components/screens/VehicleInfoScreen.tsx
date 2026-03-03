@@ -15,7 +15,7 @@ interface Props {
 const presets = [
   { label: "A Deal", data: PRESET_A, dotClass: "bg-emerald-500" },
   { label: "C Deal", data: PRESET_C, dotClass: "bg-amber-500" },
-  { label: "F Deal", data: PRESET_F, dotClass: "bg-destructive" },
+  { label: "F Deal", data: PRESET_F, dotClass: "bg-red-500" },
 ];
 
 const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) => {
