@@ -3,6 +3,7 @@ import { MAKES_MODELS, US_STATES } from "@/data/vehicleData";
 import { PRESET_A, PRESET_C, PRESET_F } from "@/data/presetDeals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pencil } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -13,10 +14,22 @@ interface Props {
 }
 
 const presets = [
-  { label: "A Deal", data: PRESET_A, dotClass: "bg-emerald-500" },
-  { label: "C Deal", data: PRESET_C, dotClass: "bg-amber-500" },
-  { label: "F Deal", data: PRESET_F, dotClass: "bg-red-500" },
+  { label: "A Deal ✅", data: PRESET_A, cls: "bg-success/15 text-success border-success/30" },
+  { label: "C Deal ⚠️", data: PRESET_C, cls: "bg-warning/15 text-warning-foreground border-warning/30" },
+  { label: "F Deal 🚩", data: PRESET_F, cls: "bg-destructive/15 text-destructive border-destructive/30" },
 ];
+
+const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
+  <div className="relative">
+    <Input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="bg-input border-input-border input-glow focus:border-primary pr-9"
+    />
+    <Pencil className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+  </div>
+);
 
 const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) => {
   const makes = Object.keys(MAKES_MODELS);
@@ -38,10 +51,10 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 card-glow rounded-xl p-5 bg-card/50 border border-border/50"
+      className="space-y-6 card-glow rounded-xl p-5 bg-card border border-border"
     >
       <div>
-        <h2 className="text-xl font-heading text-foreground">Your Vehicle</h2>
+        <h2 className="text-xl font-heading text-foreground">Your Vehicle 🚗🔑</h2>
         <p className="text-sm text-muted-foreground mt-1">Tell us about the vehicle you're looking at.</p>
       </div>
 
@@ -52,9 +65,8 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
             <button
               key={p.label}
               onClick={() => onPresetSelect(p.data)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-input-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 ${p.cls}`}
             >
-              <span className={`w-2 h-2 rounded-full ${p.dotClass}`} />
               {p.label}
             </button>
           ))}
@@ -63,11 +75,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition 🚗</label>
           <select
             value={data.condition}
             onChange={(e) => update("condition", e.target.value)}
-            className="w-full h-10 rounded-md bg-secondary border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
           >
             <option value="" className="text-muted-foreground">Select</option>
             <option value="New">New</option>
@@ -75,23 +87,18 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year</label>
-          <Input
-            value={data.year}
-            onChange={(e) => update("year", e.target.value)}
-            placeholder="e.g. 2026"
-            className="bg-secondary border-input-border input-glow focus:border-primary"
-          />
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year 📅</label>
+          <FieldInput value={data.year} onChange={(v) => update("year", v)} placeholder="e.g. 2026" />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make 🏭</label>
           <select
             value={data.make}
             onChange={(e) => update("make", e.target.value)}
-            className="w-full h-10 rounded-md bg-secondary border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
           >
             <option value="">Select Make</option>
             {makes.map((m) => (
@@ -100,12 +107,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model 🚙</label>
           <select
             value={data.model}
             onChange={(e) => update("model", e.target.value)}
             disabled={!data.make}
-            className="w-full h-10 rounded-md bg-secondary border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary disabled:opacity-50"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary disabled:opacity-50"
           >
             <option value="">Select Model</option>
             {models.map((m) => (
@@ -116,21 +123,16 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim</label>
-        <Input
-          value={data.trim}
-          onChange={(e) => update("trim", e.target.value)}
-          placeholder="e.g. XLT, Lariat, Limited"
-          className="bg-secondary border-input-border input-glow focus:border-primary"
-        />
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim ✨</label>
+        <FieldInput value={data.trim} onChange={(v) => update("trim", v)} placeholder="e.g. XLT, Lariat, Limited" />
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Dealership State</label>
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Dealership State 📍</label>
         <select
           value={data.state}
           onChange={(e) => update("state", e.target.value)}
-          className="w-full h-10 rounded-md bg-secondary border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+          className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
         >
           <option value="">Select State</option>
           {US_STATES.map((s) => (
@@ -141,21 +143,16 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
 
       <div className="space-y-1.5">
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-          Dealership Name <span className="normal-case text-muted-foreground">(optional)</span>
+          Dealership Name 🏢 <span className="normal-case text-muted-foreground">(optional)</span>
         </label>
-        <Input
-          value={data.dealershipName}
-          onChange={(e) => update("dealershipName", e.target.value)}
-          placeholder="e.g. Ford of Murfreesboro"
-          className="bg-secondary border-input-border input-glow focus:border-primary"
-        />
+        <FieldInput value={data.dealershipName} onChange={(v) => update("dealershipName", v)} placeholder="e.g. Ford of Murfreesboro" />
       </div>
 
       <Button
         onClick={onNext}
         disabled={!canProceed}
         variant="success"
-        className="w-full h-12 text-base font-semibold"
+        className="w-full h-12 text-base font-semibold rounded-xl"
       >
         Analyze My Deal →
       </Button>

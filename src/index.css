@@ -4,40 +4,40 @@
 
 @layer base {
   :root {
-    --background: 205 35% 7%;
-    --foreground: 210 15% 93%;
+    --background: 0 0% 98%;
+    --foreground: 220 20% 15%;
 
-    --card: 200 28% 12%;
-    --card-foreground: 210 15% 93%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
 
-    --popover: 200 28% 10%;
-    --popover-foreground: 210 15% 93%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
 
-    --primary: 190 100% 50%;
-    --primary-foreground: 210 30% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 30% 15%;
-    --secondary-foreground: 210 15% 93%;
+    --secondary: 220 15% 96%;
+    --secondary-foreground: 220 20% 15%;
 
-    --muted: 200 25% 14%;
-    --muted-foreground: 210 15% 70%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 200 25% 16%;
-    --accent-foreground: 210 15% 93%;
+    --accent: 220 15% 93%;
+    --accent-foreground: 220 20% 15%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 150 100% 39%;
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 93% 58%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 30 20% 10%;
 
-    --border: 200 20% 22%;
-    --input: 200 25% 14%;
-    --input-border: 200 20% 30%;
-    --ring: 190 100% 50%;
+    --border: 220 13% 87%;
+    --input: 0 0% 100%;
+    --input-border: 220 13% 82%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
@@ -54,10 +54,6 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
-    background-image: 
-      radial-gradient(ellipse 80% 60% at 50% 40%, hsl(190 80% 50% / 0.04) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 80% at 80% 20%, hsl(190 100% 50% / 0.025) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(150 80% 40% / 0.02) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -65,42 +61,22 @@
   }
 }
 
-/* Focus glow for inputs */
 @layer components {
   .input-glow:focus {
-    box-shadow: 0 0 0 2px hsl(190 100% 50% / 0.3);
+    box-shadow: 0 0 0 3px hsl(217 91% 60% / 0.15);
   }
 
   .card-glow {
-    box-shadow: 
-      0 0 0 1px hsl(190 100% 50% / 0.15),
-      0 4px 24px -4px hsl(210 30% 5% / 0.6),
-      0 0 40px -10px hsl(190 100% 50% / 0.05);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
   }
-}
 
-/* Ambient background glow animation */
-@keyframes ambient-drift {
-  0%, 100% {
-    background-position: 30% 20%, 70% 60%;
+  .caution-tape {
+    background: repeating-linear-gradient(
+      -45deg,
+      hsl(48 96% 53%),
+      hsl(48 96% 53%) 10px,
+      hsl(48 96% 43%) 10px,
+      hsl(48 96% 43%) 20px
+    );
   }
-  33% {
-    background-position: 60% 40%, 40% 30%;
-  }
-  66% {
-    background-position: 40% 60%, 60% 80%;
-  }
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 50% 50% at 30% 20%, hsl(190 100% 50% / 0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 70% 60%, hsl(150 80% 40% / 0.03) 0%, transparent 70%);
-  background-size: 200% 200%, 200% 200%;
-  animation: ambient-drift 20s ease-in-out infinite;
 }
