@@ -107,6 +107,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
           </motion.div>
 
           {/* Impact sparks */}
+          {/* Impact sparks - synced to hammer strike at 0.55 * 1.1s ≈ 0.605s into each cycle */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
@@ -116,14 +117,14 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
                 left: 52 + (i - 1) * 12,
               }}
               animate={{
-                scale: [0, 1.5, 0],
-                opacity: [0, 1, 0],
+                scale: [0, 0, 1.5, 0],
+                opacity: [0, 0, 1, 0],
               }}
               transition={{
-                duration: 0.5,
+                duration: 1.1,
                 repeat: Infinity,
-                repeatDelay: 0.6,
-                delay: 0.6 + i * 0.05,
+                ease: "easeOut",
+                times: [0, 0.54, 0.6, 0.75],
               }}
             />
           ))}
