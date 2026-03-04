@@ -65,16 +65,16 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
         className="flex flex-col items-center justify-center py-20 space-y-6"
       >
         {/* Animation Scene */}
-        <div className="relative w-48 h-48 flex items-center justify-center">
-          {/* Contract / Document */}
+        <div className="relative w-64 h-56 flex items-center justify-center">
+          {/* Contract / Document - centered-left */}
           <motion.div
-            className="absolute w-24 h-32 bg-card border border-border rounded-lg shadow-lg flex flex-col items-center justify-center gap-2 p-3"
-            style={{ bottom: 16 }}
+            className="absolute w-28 h-36 bg-card border border-border rounded-lg shadow-lg flex flex-col items-center justify-center gap-2 p-3"
+            style={{ bottom: 8, left: 32 }}
             animate={{
               rotate: [0, 0, -2, 2, -1, 0],
-              scale: [1, 1, 0.97, 1.01, 0.99, 1],
+              scale: [1, 1, 0.96, 1.01, 0.99, 1],
             }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
           >
             {/* Fake text lines */}
             <div className="w-full h-1.5 bg-muted rounded-full" />
@@ -86,45 +86,44 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
             <div className="mt-2 w-1/2 h-0.5 bg-destructive/40 rounded-full" />
           </motion.div>
 
-          {/* Hammer */}
-          {/* Hammer - pivots from bottom of handle (hand grip), swings overhand */}
+          {/* Hammer - positioned to the right, pivots from bottom (grip), head strikes center of paper */}
           <motion.div
             className="absolute"
-            style={{ top: -10, left: "50%", marginLeft: -1, transformOrigin: "bottom center" }}
+            style={{ top: -16, right: 16, transformOrigin: "bottom center" }}
             animate={{
-              rotate: [-60, -60, 0, -60],
+              rotate: [-50, -50, 10, -50],
             }}
             transition={{
-              duration: 0.8,
+              duration: 1.1,
               repeat: Infinity,
               ease: "easeInOut",
               times: [0, 0.35, 0.55, 1],
             }}
           >
             {/* Head (at top) */}
-            <div className="w-10 h-6 bg-muted-foreground rounded-md shadow-md -ml-4" />
+            <div className="w-14 h-8 bg-muted-foreground rounded-md shadow-md -ml-5" />
             {/* Handle (below head, going down to the "hand") */}
-            <div className="w-2 h-20 bg-warning rounded-full mx-auto -mt-1" />
+            <div className="w-2.5 h-28 bg-warning rounded-full mx-auto -mt-1" />
           </motion.div>
 
           {/* Impact sparks */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 rounded-full bg-destructive"
+              className="absolute w-2.5 h-2.5 rounded-full bg-destructive"
               style={{
-                bottom: 48 + (i - 1) * 12,
-                left: 56 + (i - 1) * 10,
+                bottom: 44 + (i - 1) * 14,
+                left: 52 + (i - 1) * 12,
               }}
               animate={{
                 scale: [0, 1.5, 0],
                 opacity: [0, 1, 0],
               }}
               transition={{
-                duration: 0.4,
+                duration: 0.5,
                 repeat: Infinity,
-                repeatDelay: 0.4,
-                delay: 0.5 + i * 0.05,
+                repeatDelay: 0.6,
+                delay: 0.6 + i * 0.05,
               }}
             />
           ))}
