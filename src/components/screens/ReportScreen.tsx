@@ -62,17 +62,77 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center py-20 space-y-4"
+        className="flex flex-col items-center justify-center py-20 space-y-6"
       >
-        <div className="flex items-center gap-2">
+        {/* Animation Scene */}
+        <div className="relative w-48 h-48 flex items-center justify-center">
+          {/* Contract / Document */}
           <motion.div
-            className="w-3 h-3 rounded-full bg-primary"
-            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.5, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
-          />
-          <span className="text-lg text-foreground font-medium">Analyzing your deal... 🔍</span>
+            className="absolute w-24 h-32 bg-card border border-border rounded-lg shadow-lg flex flex-col items-center justify-center gap-2 p-3"
+            style={{ bottom: 16 }}
+            animate={{
+              rotate: [0, 0, -2, 2, -1, 0],
+              scale: [1, 1, 0.97, 1.01, 0.99, 1],
+            }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            {/* Fake text lines */}
+            <div className="w-full h-1.5 bg-muted rounded-full" />
+            <div className="w-3/4 h-1.5 bg-muted rounded-full" />
+            <div className="w-full h-1.5 bg-muted rounded-full" />
+            <div className="w-2/3 h-1.5 bg-muted rounded-full" />
+            <div className="w-full h-1.5 bg-muted rounded-full" />
+            {/* "Signature" line */}
+            <div className="mt-2 w-1/2 h-0.5 bg-destructive/40 rounded-full" />
+          </motion.div>
+
+          {/* Hammer */}
+          <motion.div
+            className="absolute"
+            style={{ top: 0, right: 24, originX: 1, originY: 0, transformOrigin: "right top" }}
+            animate={{
+              rotate: [-45, -45, 15, -45],
+            }}
+            transition={{
+              duration: 0.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              times: [0, 0.4, 0.6, 1],
+            }}
+          >
+            {/* Handle */}
+            <div className="w-2 h-20 bg-warning rounded-full mx-auto" />
+            {/* Head */}
+            <div className="w-10 h-6 bg-muted-foreground rounded-md -mt-1 -ml-4 shadow-md" />
+          </motion.div>
+
+          {/* Impact sparks */}
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 rounded-full bg-destructive"
+              style={{
+                bottom: 48 + (i - 1) * 12,
+                left: 56 + (i - 1) * 10,
+              }}
+              animate={{
+                scale: [0, 1.5, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 0.4,
+                repeat: Infinity,
+                repeatDelay: 0.4,
+                delay: 0.5 + i * 0.05,
+              }}
+            />
+          ))}
         </div>
-        <p className="text-sm text-muted-foreground">Our AI is reviewing every line item</p>
+
+        <div className="text-center space-y-1">
+          <span className="text-lg text-foreground font-medium">Breaking down your deal... 🔨</span>
+          <p className="text-sm text-muted-foreground">Our AI is auditing every line item</p>
+        </div>
       </motion.div>
     );
   }
