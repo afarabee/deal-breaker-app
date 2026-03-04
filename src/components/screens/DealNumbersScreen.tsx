@@ -65,10 +65,14 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         <CurrencyInput value={data.downPayment} onChange={(v) => update("downPayment", v)} placeholder="12500" />
       </div>
 
-      <div className="rounded-lg bg-destructive/15 border border-destructive/30 px-3 py-2.5">
-        <p className="text-xs text-destructive leading-relaxed">
-          🛑 <span className="font-semibold">Heads up:</span> Dealers can legally add up to 2% to your lender's rate and pocket the difference. Always ask for the <span className="font-semibold">"buy rate"</span> before any dealer markup.
-        </p>
+      <div className="rounded-xl overflow-hidden">
+        <div className="h-2 bg-destructive" />
+        <div className="bg-destructive/20 p-4">
+          <p className="text-sm font-bold text-foreground text-center">
+            🛑 Dealers can legally add up to 2% to your lender's rate and pocket the difference. Always ask for the "buy rate"!
+          </p>
+        </div>
+        <div className="h-2 bg-destructive" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
