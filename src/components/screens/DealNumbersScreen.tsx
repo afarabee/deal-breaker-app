@@ -65,6 +65,12 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         <CurrencyInput value={data.downPayment} onChange={(v) => update("downPayment", v)} placeholder="12500" />
       </div>
 
+      <div className="rounded-lg bg-destructive/15 border border-destructive/30 px-3 py-2.5">
+        <p className="text-xs text-destructive leading-relaxed">
+          🛑 <span className="font-semibold">Heads up:</span> Dealers can legally add up to 2% to your lender's rate and pocket the difference. Always ask for the <span className="font-semibold">"buy rate"</span> before any dealer markup.
+        </p>
+      </div>
+
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Interest Rate (APR) 📊</label>
@@ -91,12 +97,6 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             ))}
           </select>
         </div>
-      </div>
-
-      <div className="rounded-lg bg-accent/50 border border-accent px-3 py-2.5">
-        <p className="text-xs text-accent-foreground leading-relaxed">
-          💡 <span className="font-semibold">Did you know?</span> Dealers can legally add up to 2% to your lender's rate and keep the difference. Always ask for the <span className="font-semibold">"buy rate."</span>
-        </p>
       </div>
 
       {/* Caution Tape Warning */}
