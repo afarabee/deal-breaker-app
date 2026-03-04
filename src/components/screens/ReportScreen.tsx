@@ -1,20 +1,37 @@
 import { DealReport } from "@/types/deal";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
-import { Share2 } from "lucide-react";
+import { Share2, Printer, GitCompareArrows } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Props {
   report: DealReport | null;
   loading: boolean;
+  analysisError?: boolean;
+  errorMessage?: string;
+  onRetry?: () => void;
   onEditDeal: () => void;
   onStartOver: () => void;
+  onCompare?: () => void;
 }
 
 const statusColor = (s: "red" | "yellow" | "green") => {
-  if (s === "red") return { bg: "bg-destructive/15", text: "text-destructive", border: "border-l-destructive", label: "Push Back", pill: "bg-destructive text-destructive-foreground" };
-  if (s === "yellow") return { bg: "bg-warning/15", text: "text-warning-foreground", border: "border-l-warning", label: "Review", pill: "bg-warning text-warning-foreground" };
-  return { bg: "bg-success/15", text: "text-success", border: "border-l-success", label: "Fair", pill: "bg-success text-success-foreground" };
+  if (s === "red") return {
+    bg: "bg-destructive/15", text: "text-destructive", border: "border-l-destructive",
+    label: "Push Back", pill: "bg-destructive text-destructive-foreground",
+    tooltip: "This item is overpriced or a junk fee. Push back hard or ask to have it removed entirely.",
+  };
+  if (s === "yellow") return {
+    bg: "bg-warning/15", text: "text-warning-foreground", border: "border-l-warning",
+    label: "Review", pill: "bg-warning text-warning-foreground",
+    tooltip: "This item may be reasonable, but you should compare pricing and negotiate before agreeing.",
+  };
+  return {
+    bg: "bg-success/15", text: "text-success", border: "border-l-success",
+    label: "Fair", pill: "bg-success text-success-foreground",
+    tooltip: "This item appears fair and within normal range. No action needed.",
+  };
 };
 
 const gradeEmoji = (grade: string) => {
@@ -56,7 +73,20 @@ const AnimatedScore = ({ grade }: { grade: string }) => {
   );
 };
 
-const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
+const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, onEditDeal, onStartOver, onCompare }: Props) => {
+  const [showTimeout, setShowTimeout] = useState(false);
+
+  // Loading timeout — show message after 30 seconds
+  useEffect(() => {
+    if (!loading) {
+      setShowTimeout(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowTimeout(true), 30000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  // Loading state
   if (loading) {
     return (
       <motion.div
@@ -66,7 +96,6 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       >
         {/* Animation Scene */}
         <div className="relative w-64 h-56 flex items-center justify-center">
-          {/* Contract / Document - centered-left */}
           <motion.div
             className="absolute w-28 h-36 bg-card border border-border rounded-lg shadow-lg flex flex-col items-center justify-center gap-2 p-3"
             style={{ bottom: 8, left: 32 }}
@@ -76,23 +105,18 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
             }}
             transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
           >
-            {/* Fake text lines */}
             <div className="w-full h-1.5 bg-muted rounded-full" />
             <div className="w-3/4 h-1.5 bg-muted rounded-full" />
             <div className="w-full h-1.5 bg-muted rounded-full" />
             <div className="w-2/3 h-1.5 bg-muted rounded-full" />
             <div className="w-full h-1.5 bg-muted rounded-full" />
-            {/* "Signature" line */}
             <div className="mt-2 w-1/2 h-0.5 bg-destructive/40 rounded-full" />
           </motion.div>
 
-          {/* Hammer - positioned to the right, pivots from bottom (grip), head strikes center of paper */}
           <motion.div
             className="absolute"
             style={{ top: -16, right: 16, transformOrigin: "bottom center" }}
-            animate={{
-              rotate: [-50, -50, 10, -50],
-            }}
+            animate={{ rotate: [-50, -50, 10, -50] }}
             transition={{
               duration: 1.1,
               repeat: Infinity,
@@ -100,14 +124,10 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
               times: [0, 0.35, 0.55, 1],
             }}
           >
-            {/* Head (at top) */}
             <div className="w-14 h-8 bg-muted-foreground rounded-md shadow-md -ml-5" />
-            {/* Handle (below head, going down to the "hand") */}
             <div className="w-2.5 h-28 bg-warning rounded-full mx-auto -mt-1" />
           </motion.div>
 
-          {/* Impact sparks */}
-          {/* Impact sparks - synced to hammer strike at 0.55 * 1.1s ≈ 0.605s into each cycle */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
@@ -131,8 +151,36 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
         </div>
 
         <div className="text-center space-y-1">
-          <span className="text-lg text-foreground font-medium">Breaking down your deal... 🔨</span>
+          <span className="text-lg text-foreground font-medium">Breaking down your deal...</span>
           <p className="text-sm text-muted-foreground">Our AI is auditing every line item</p>
+        </div>
+
+        {showTimeout && (
+          <div className="text-center space-y-2 mt-4">
+            <p className="text-sm text-warning-foreground">Taking longer than expected...</p>
+            {onRetry && <Button variant="outline" onClick={onRetry}>Try Again</Button>}
+          </div>
+        )}
+      </motion.div>
+    );
+  }
+
+  // Error state
+  if (analysisError) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center justify-center py-20 space-y-4"
+      >
+        <div className="text-5xl">😔</div>
+        <p className="text-lg text-foreground font-medium">Analysis failed</p>
+        <p className="text-sm text-muted-foreground text-center max-w-[280px]">
+          {errorMessage || "Something went wrong. Please try again."}
+        </p>
+        <div className="flex gap-3 pt-2">
+          {onRetry && <Button variant="success" onClick={onRetry}>Try Again</Button>}
+          <Button variant="outline" onClick={onEditDeal}>Edit Deal</Button>
         </div>
       </motion.div>
     );
@@ -154,14 +202,14 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
   };
 
   const leverData = [
-    { label: "🏷️ Price", status: report.leverAnalysis.price.status, value: report.leverAnalysis.price.assessment, color: "bg-primary/10 border-primary/20" },
+    { label: "Price", status: report.leverAnalysis.price.status, value: report.leverAnalysis.price.assessment, color: "bg-primary/10 border-primary/20" },
     {
-      label: "🔄 Trade",
+      label: "Trade",
       status: report.leverAnalysis.trade.status,
       value: `${report.leverAnalysis.trade.isNegative ? "-" : "+"}$${Math.abs(report.leverAnalysis.trade.equity).toLocaleString()}`,
       color: "bg-warning/10 border-warning/20",
     },
-    { label: "📊 Rate", status: report.leverAnalysis.rate.status, value: report.leverAnalysis.rate.assessment, color: "bg-success/10 border-success/20" },
+    { label: "Rate", status: report.leverAnalysis.rate.status, value: report.leverAnalysis.rate.assessment, color: "bg-success/10 border-success/20" },
   ];
 
   return (
@@ -173,13 +221,13 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
     >
       {/* Deal Score */}
       <div className={`text-center py-8 rounded-2xl ${gradeBg(report.dealScore)}`}>
-        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Audit Results 📋</p>
+        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Audit Results</p>
         <AnimatedScore grade={report.dealScore} />
         <p className="text-sm text-muted-foreground mt-3">
-          {redCount > 0 && <span className="text-destructive font-medium">{redCount} issue{redCount > 1 ? "s" : ""} to push back on 🚩</span>}
+          {redCount > 0 && <span className="text-destructive font-medium">{redCount} issue{redCount > 1 ? "s" : ""} to push back on</span>}
           {redCount > 0 && yellowCount > 0 && " · "}
-          {yellowCount > 0 && <span className="font-medium">{yellowCount} item{yellowCount > 1 ? "s" : ""} to review ⚠️</span>}
-          {redCount === 0 && yellowCount === 0 && <span className="text-success font-medium">Clean deal — no major issues found ✅</span>}
+          {yellowCount > 0 && <span className="font-medium">{yellowCount} item{yellowCount > 1 ? "s" : ""} to review</span>}
+          {redCount === 0 && yellowCount === 0 && <span className="text-success font-medium">Clean deal — no major issues found</span>}
         </p>
         <p className="text-sm text-muted-foreground mt-1">{report.summary}</p>
       </div>
@@ -205,7 +253,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
 
       {/* Line-by-Line Audit */}
       <div className="space-y-3">
-        <h3 className="text-sm font-heading text-foreground uppercase tracking-wider">📝 Line-by-Line Audit</h3>
+        <h3 className="text-sm font-heading text-foreground uppercase tracking-wider">Line-by-Line Audit</h3>
         {report.lineItems.map((item, i) => {
           const c = statusColor(item.status);
           return (
@@ -220,7 +268,14 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
                 <span className="text-sm font-semibold text-foreground">{item.name}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">${item.amount.toLocaleString()}</span>
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${c.pill}`}>{c.label}</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold cursor-help ${c.pill}`}>{c.label}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-[220px] text-xs">{c.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">{item.explanation}</p>
@@ -232,10 +287,9 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       {/* Negotiation Scripts */}
       {report.negotiationScripts.length > 0 && (
         <div className="space-y-3 rounded-2xl bg-primary/5 border border-primary/15 p-5">
-          <h3 className="text-sm font-heading text-primary uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
+          <h3 className="text-sm font-heading text-primary uppercase tracking-wider">Negotiation Scripts</h3>
           {[...report.negotiationScripts]
             .sort((a, b) => {
-              // Interest rate always first
               const aIsRate = a.item.toLowerCase().includes("interest") || a.item.toLowerCase().includes("rate");
               const bIsRate = b.item.toLowerCase().includes("interest") || b.item.toLowerCase().includes("rate");
               if (aIsRate && !bIsRate) return -1;
@@ -252,7 +306,7 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
               transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
               className="rounded-xl bg-card border border-primary/10 p-4"
             >
-              <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">💬 {script.item}</p>
+              <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">{script.item}</p>
               <p className="text-sm text-foreground italic leading-relaxed">"{script.script}"</p>
             </motion.div>
           ))}
@@ -267,21 +321,35 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
           transition={{ delay: 1.3, duration: 0.4 }}
           className="rounded-2xl bg-success p-6 text-center"
         >
-          <p className="text-sm text-success-foreground/80 uppercase tracking-wider mb-1">💰 Potential Savings ⬆️</p>
+          <p className="text-sm text-success-foreground/80 uppercase tracking-wider mb-1">Potential Savings</p>
           <p className="text-4xl font-heading text-success-foreground">${report.potentialSavings.toLocaleString()}</p>
-          <p className="text-sm text-success-foreground/70 mt-1">If all flagged items are successfully negotiated 🎉</p>
+          <p className="text-sm text-success-foreground/70 mt-1">If all flagged items are successfully negotiated</p>
         </motion.div>
       )}
 
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={onEditDeal}>✏️ Edit Deal</Button>
-          <Button variant="outline" onClick={onStartOver}>🔄 Start Over</Button>
+      {/* Action Buttons */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 no-print">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={onEditDeal}>Edit Deal</Button>
+          <Button variant="outline" onClick={onStartOver}>Start Over</Button>
         </div>
-        <Button onClick={handleShare} variant="outline">
-          <Share2 className="h-4 w-4 mr-1" /> Share 🔗
-        </Button>
+        <div className="flex items-center gap-2">
+          {onCompare && (
+            <Button onClick={onCompare} variant="outline" size="sm">
+              <GitCompareArrows className="h-4 w-4 mr-1" /> Compare
+            </Button>
+          )}
+          <Button onClick={() => window.print()} variant="outline" size="sm">
+            <Printer className="h-4 w-4 mr-1" /> Print
+          </Button>
+          <Button onClick={handleShare} variant="outline" size="sm">
+            <Share2 className="h-4 w-4 mr-1" /> Share
+          </Button>
+        </div>
       </div>
+      <p className="text-xs text-muted-foreground text-center no-print">
+        Tip: Choose "Save as PDF" in the print dialog to save a copy
+      </p>
     </motion.div>
   );
 };

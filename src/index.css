@@ -44,6 +44,43 @@
     --font-heading: 'Archivo Black', sans-serif;
     --font-body: 'DM Sans', sans-serif;
   }
+
+  .dark {
+    --background: 220 20% 7%;
+    --foreground: 220 15% 90%;
+
+    --card: 220 20% 10%;
+    --card-foreground: 220 15% 90%;
+
+    --popover: 220 20% 10%;
+    --popover-foreground: 220 15% 90%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 220 15% 20%;
+    --accent-foreground: 220 15% 90%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 48 96% 53%;
+    --warning-foreground: 48 10% 90%;
+
+    --border: 220 15% 20%;
+    --input: 220 20% 13%;
+    --input-border: 220 15% 25%;
+    --ring: 217 91% 60%;
+  }
 }
 
 @layer base {
@@ -78,5 +115,19 @@
       hsl(48 96% 43%) 10px,
       hsl(48 96% 43%) 20px
     );
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  header {
+    display: none !important;
   }
 }

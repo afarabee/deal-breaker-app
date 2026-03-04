@@ -15,6 +15,8 @@ export interface DealNumbers {
   downPayment: string;
   interestRate: string;
   loanTerm: string;
+  monthlyPayment: string;
+  creditScore: string;
 }
 
 export interface CustomFee {
@@ -65,4 +67,13 @@ export interface DealReport {
   negotiationScripts: NegotiationScript[];
   potentialSavings: number;
   leverAnalysis: LeverAnalysis;
+}
+
+export interface SavedDeal {
+  id: string;
+  date: string;
+  vehicle: VehicleInfo;
+  numbers: DealNumbers;
+  fees: FeeBreakdown;
+  report: DealReport;
 }

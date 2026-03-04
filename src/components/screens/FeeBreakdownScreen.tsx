@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { FeeBreakdown, CustomFee } from "@/types/deal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
+import CurrencyInput from "@/components/CurrencyInput";
+import NumericKeypad from "@/components/NumericKeypad";
 
 interface Props {
   data: FeeBreakdown;
@@ -12,22 +15,41 @@ interface Props {
   onStartOver: () => void;
 }
 
-const CurrencyInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
-  <div className="relative">
-    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-    <Input
-      value={value}
-      onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
-      placeholder={placeholder}
-      className="pl-7 pr-9 bg-input border-input-border input-glow focus:border-primary"
-    />
-    <Pencil className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
-  </div>
-);
+type FeeField = {
+  key: keyof Omit<FeeBreakdown, "customFees">;
+  label: string;
+  placeholder: string;
+};
+
+const STANDARD_FEES: FeeField[] = [
+  { key: "docFee", label: "Doc / Administrative Fee", placeholder: "899" },
+  { key: "salesTax", label: "Sales Tax", placeholder: "4688" },
+  { key: "registration", label: "Registration / Title / License", placeholder: "119" },
+];
+
+const ADDON_FEES: FeeField[] = [
+  { key: "antiTheft", label: "Anti-Theft / Etch / Ikon", placeholder: "698" },
+  { key: "extendedWarranty", label: "Extended Warranty", placeholder: "2436" },
+  { key: "gapCoverage", label: "GAP Coverage", placeholder: "1200" },
+  { key: "maintenanceContract", label: "Maintenance Contract", placeholder: "2290" },
+];
+
+const ALL_FEES = [...STANDARD_FEES, ...ADDON_FEES];
 
 const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: Props) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [rapidMode, setRapidMode] = useState(false);
+  const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
+
   const update = (field: keyof Omit<FeeBreakdown, "customFees">, value: string) => {
     onChange({ ...data, [field]: value });
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
   const addCustomFee = () => {
@@ -44,6 +66,104 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
     });
   };
 
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    // Check all fee fields for valid positive numbers
+    for (const field of ALL_FEES) {
+      const val = data[field.key];
+      if (val) {
+        const num = parseFloat(val);
+        if (isNaN(num) || num < 0) {
+          newErrors[field.key] = "Enter a valid positive amount";
+        }
+      }
+    }
+    // Validate custom fees
+    for (const fee of data.customFees) {
+      if (fee.amount) {
+        const num = parseFloat(fee.amount);
+        if (isNaN(num) || num < 0) {
+          newErrors[`custom-${fee.id}`] = "Enter a valid positive amount";
+        }
+      }
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) onSubmit();
+  };
+
+  // Rapid entry keypad mode
+  if (rapidMode && activeFieldIndex !== null) {
+    const field = ALL_FEES[activeFieldIndex];
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+      >
+        <NumericKeypad
+          value={data[field.key]}
+          onChange={(v) => update(field.key, v)}
+          label={field.label}
+          onDone={() => {
+            if (activeFieldIndex < ALL_FEES.length - 1) {
+              setActiveFieldIndex(activeFieldIndex + 1);
+            } else {
+              setActiveFieldIndex(null);
+            }
+          }}
+        />
+        <p className="text-xs text-muted-foreground text-center">
+          Fee {activeFieldIndex + 1} of {ALL_FEES.length}
+        </p>
+      </motion.div>
+    );
+  }
+
+  if (rapidMode) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-heading text-foreground">Quick Entry</h2>
+          <button
+            onClick={() => setRapidMode(false)}
+            className="text-xs px-3 py-1.5 rounded-full border border-primary bg-primary text-primary-foreground font-semibold"
+          >
+            Standard Entry
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground">Tap a fee to enter its value with the keypad.</p>
+        <div className="space-y-2">
+          {ALL_FEES.map((field, i) => (
+            <button
+              key={field.key}
+              onClick={() => setActiveFieldIndex(i)}
+              className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-secondary/50 hover:bg-secondary transition-colors text-left"
+            >
+              <span className="text-sm text-foreground">{field.label}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {data[field.key] ? "$" + Number(data[field.key]).toLocaleString() : "—"}
+              </span>
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center justify-between pt-2">
+          <Button variant="outline" onClick={onBack}>← Back</Button>
+          <Button onClick={handleSubmit} variant="success" className="rounded-xl">Break This Deal</Button>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -52,50 +172,42 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
       transition={{ duration: 0.3 }}
       className="space-y-6 card-glow rounded-xl p-5 bg-card border border-border"
     >
-      <div>
-        <h2 className="text-xl font-heading text-foreground">Fee Breakdown 💼</h2>
-        <p className="text-sm text-muted-foreground mt-1">Enter every fee and add-on from your worksheet. This is where dealers hide profit. 🔍</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-heading text-foreground">Fee Breakdown</h2>
+          <p className="text-sm text-muted-foreground mt-1">Enter every fee and add-on from your worksheet. This is where dealers hide profit.</p>
+        </div>
+        <button
+          onClick={() => setRapidMode(true)}
+          className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 font-semibold transition-colors shrink-0"
+        >
+          Quick Entry
+        </button>
       </div>
 
       {/* Standard Fees */}
       <div className="rounded-lg border border-border bg-secondary/50 p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">📋 Standard Fees 💰</h3>
+        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Standard Fees</h3>
         <div className="space-y-3">
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Doc / Administrative Fee</label>
-            <CurrencyInput value={data.docFee} onChange={(v) => update("docFee", v)} placeholder="899" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Sales Tax</label>
-            <CurrencyInput value={data.salesTax} onChange={(v) => update("salesTax", v)} placeholder="4688" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Registration / Title / License</label>
-            <CurrencyInput value={data.registration} onChange={(v) => update("registration", v)} placeholder="119" />
-          </div>
+          {STANDARD_FEES.map((field) => (
+            <div key={field.key} className="space-y-1.5">
+              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{field.label}</label>
+              <CurrencyInput value={data[field.key]} onChange={(v) => update(field.key, v)} placeholder={field.placeholder} error={errors[field.key]} />
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Dealer Add-Ons */}
       <div className="rounded-lg border border-border bg-secondary/50 p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">🔧 Dealer Add-Ons & F&I Products 👀</h3>
+        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Dealer Add-Ons & F&I Products</h3>
         <div className="space-y-3">
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Anti-Theft / Etch / Ikon</label>
-            <CurrencyInput value={data.antiTheft} onChange={(v) => update("antiTheft", v)} placeholder="698" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Extended Warranty</label>
-            <CurrencyInput value={data.extendedWarranty} onChange={(v) => update("extendedWarranty", v)} placeholder="2436" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">GAP Coverage</label>
-            <CurrencyInput value={data.gapCoverage} onChange={(v) => update("gapCoverage", v)} placeholder="1200" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Maintenance Contract</label>
-            <CurrencyInput value={data.maintenanceContract} onChange={(v) => update("maintenanceContract", v)} placeholder="2290" />
-          </div>
+          {ADDON_FEES.map((field) => (
+            <div key={field.key} className="space-y-1.5">
+              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{field.label}</label>
+              <CurrencyInput value={data[field.key]} onChange={(v) => update(field.key, v)} placeholder={field.placeholder} error={errors[field.key]} />
+            </div>
+          ))}
 
           {data.customFees.map((fee) => (
             <div key={fee.id} className="grid grid-cols-2 gap-3">
@@ -117,6 +229,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
                   value={fee.amount}
                   onChange={(v) => updateCustomFee(fee.id, "amount", v)}
                   placeholder="0"
+                  error={errors[`custom-${fee.id}`]}
                 />
               </div>
             </div>
@@ -126,7 +239,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
             onClick={addCustomFee}
             className="w-full h-10 rounded-md border-2 border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="h-4 w-4" /> Add Another Fee ➕
+            <Plus className="h-4 w-4" /> Add Another Fee
           </button>
         </div>
       </div>
@@ -136,7 +249,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
           <Button variant="outline" onClick={onBack}>← Back</Button>
           <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
         </div>
-        <Button onClick={onSubmit} variant="success" className="rounded-xl">Break This Deal 🔥</Button>
+        <Button onClick={handleSubmit} variant="success" className="rounded-xl">Break This Deal</Button>
       </div>
     </motion.div>
   );

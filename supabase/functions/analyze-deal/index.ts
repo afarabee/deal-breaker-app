@@ -41,8 +41,16 @@ Rules for evaluation:
 - Doc/Admin fees: Compare to state caps. Tennessee has NO cap. National average is ~$400. Flag RED if above $500.
 - Anti-theft, etch, nitrogen fill, paint protection, fabric guard, VIN etching, pinstripe: These are dealer-installed junk fees. Always RED if present.
 - Extended warranty, GAP, maintenance contracts: These are buyer-choice products. Flag YELLOW with advice to compare third-party pricing.
-- Interest rate: Flag RED if >7%, YELLOW if >5%, GREEN if ≤5%. Note that credit unions typically offer lower rates. IMPORTANT: The quoted rate almost certainly includes up to 2% "dealer reserve" (dealer markup) above the lender's actual buy rate. The dealer pockets this difference. Most buyers are never told this.
+- Interest rate evaluation depends on credit score if provided:
+  - Excellent (750+): rates above 5% are suspicious. Flag YELLOW if >5%, RED if >7%.
+  - Good (700-749): rates above 6% are suspicious. Flag YELLOW if >6%, RED if >8%.
+  - Fair (650-699): rates above 8% are suspicious. Flag YELLOW if >8%, RED if >11%.
+  - Poor (below 650): rates above 12% are suspicious. Flag YELLOW if >12%, RED if >16%.
+  - If no credit score provided: Flag RED if >7%, YELLOW if >5%, GREEN if ≤5%.
+  - Always note that credit unions typically offer lower rates.
+- IMPORTANT: The quoted rate almost certainly includes up to 2% "dealer reserve" (dealer markup) above the lender's actual buy rate. The dealer pockets this difference. Most buyers are never told this.
 - Dealer rate markup (dealer reserve): Dealers can legally mark up the interest rate by up to 2% above the lender's buy rate and pocket the difference. The buyer is almost never told this. ALWAYS generate a negotiation script for the interest rate, even if the rate is GREEN. The script should instruct the buyer to ask "What is the buy rate from the lender before any dealer markup?" and to request the markup be removed or reduced. Mention that credit unions typically don't add dealer reserve. Include estimated savings from removing a 1-2% rate markup over the full loan term in potentialSavings when applicable.
+- Monthly payment verification: If a monthly payment amount is provided, calculate what the monthly payment SHOULD be based on the selling price, trade-in value, trade payoff, down payment, interest rate, and loan term. If the quoted monthly payment is higher than the calculated amount (by more than $10), flag it as RED with an explanation of the discrepancy and the dollar difference. This could indicate hidden fees, payment packing, or miscalculation. Include the correct calculated payment in the explanation.
 - Negative equity (trade payoff > trade value): Flag RED if negative equity exists. Calculate the exact amount.
 - Always generate negotiation scripts for RED items AND always for interest rate (regardless of color). Scripts should be polite but firm, and include "I'm ready to buy/sign today if..." framing.
 - Deal score should reflect overall deal quality: A = excellent (no red items, minimal yellow), F = terrible (multiple red flags, rate padding, hidden fees).
