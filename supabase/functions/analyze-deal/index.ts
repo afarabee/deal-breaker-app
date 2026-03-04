@@ -41,9 +41,10 @@ Rules for evaluation:
 - Doc/Admin fees: Compare to state caps. Tennessee has NO cap. National average is ~$400. Flag RED if above $500.
 - Anti-theft, etch, nitrogen fill, paint protection, fabric guard, VIN etching, pinstripe: These are dealer-installed junk fees. Always RED if present.
 - Extended warranty, GAP, maintenance contracts: These are buyer-choice products. Flag YELLOW with advice to compare third-party pricing.
-- Interest rate: Flag RED if >7%, YELLOW if >5%, GREEN if ≤5%. Note that credit unions typically offer lower rates.
+- Interest rate: Flag RED if >7%, YELLOW if >5%, GREEN if ≤5%. Note that credit unions typically offer lower rates. IMPORTANT: The quoted rate almost certainly includes up to 2% "dealer reserve" (dealer markup) above the lender's actual buy rate. The dealer pockets this difference. Most buyers are never told this.
+- Dealer rate markup (dealer reserve): Dealers can legally mark up the interest rate by up to 2% above the lender's buy rate and pocket the difference. The buyer is almost never told this. ALWAYS generate a negotiation script for the interest rate, even if the rate is GREEN. The script should instruct the buyer to ask "What is the buy rate from the lender before any dealer markup?" and to request the markup be removed or reduced. Mention that credit unions typically don't add dealer reserve. Include estimated savings from removing a 1-2% rate markup over the full loan term in potentialSavings when applicable.
 - Negative equity (trade payoff > trade value): Flag RED if negative equity exists. Calculate the exact amount.
-- Always generate negotiation scripts for RED items. Scripts should be polite but firm, and include "I'm ready to buy/sign today if..." framing.
+- Always generate negotiation scripts for RED items AND always for interest rate (regardless of color). Scripts should be polite but firm, and include "I'm ready to buy/sign today if..." framing.
 - Deal score should reflect overall deal quality: A = excellent (no red items, minimal yellow), F = terrible (multiple red flags, rate padding, hidden fees).
 
 Respond with ONLY the JSON object. No markdown, no explanation outside the JSON.`;
