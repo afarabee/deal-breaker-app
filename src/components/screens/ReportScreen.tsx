@@ -87,23 +87,24 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
           </motion.div>
 
           {/* Hammer */}
+          {/* Hammer - pivots from bottom of handle (hand grip), swings overhand */}
           <motion.div
             className="absolute"
-            style={{ top: 0, right: 24, originX: 1, originY: 0, transformOrigin: "right top" }}
+            style={{ top: -10, left: "50%", marginLeft: -1, transformOrigin: "bottom center" }}
             animate={{
-              rotate: [-45, -45, 15, -45],
+              rotate: [-60, -60, 0, -60],
             }}
             transition={{
               duration: 0.8,
               repeat: Infinity,
               ease: "easeInOut",
-              times: [0, 0.4, 0.6, 1],
+              times: [0, 0.35, 0.55, 1],
             }}
           >
-            {/* Handle */}
-            <div className="w-2 h-20 bg-warning rounded-full mx-auto" />
-            {/* Head */}
-            <div className="w-10 h-6 bg-muted-foreground rounded-md -mt-1 -ml-4 shadow-md" />
+            {/* Head (at top) */}
+            <div className="w-10 h-6 bg-muted-foreground rounded-md shadow-md -ml-4" />
+            {/* Handle (below head, going down to the "hand") */}
+            <div className="w-2 h-20 bg-warning rounded-full mx-auto -mt-1" />
           </motion.div>
 
           {/* Impact sparks */}
