@@ -235,6 +235,11 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
           <h3 className="text-sm font-heading text-primary uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
           {[...report.negotiationScripts]
             .sort((a, b) => {
+              // Interest rate always first
+              const aIsRate = a.item.toLowerCase().includes("interest") || a.item.toLowerCase().includes("rate");
+              const bIsRate = b.item.toLowerCase().includes("interest") || b.item.toLowerCase().includes("rate");
+              if (aIsRate && !bIsRate) return -1;
+              if (!aIsRate && bIsRate) return 1;
               const amountA = report.lineItems.find((li) => li.name === a.item)?.amount ?? 0;
               const amountB = report.lineItems.find((li) => li.name === b.item)?.amount ?? 0;
               return amountB - amountA;
