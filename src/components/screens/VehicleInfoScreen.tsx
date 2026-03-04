@@ -145,7 +145,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
           Dealership Name 🏢 <span className="normal-case text-muted-foreground">(optional)</span>
         </label>
-        <FieldInput value={data.dealershipName} onChange={(v) => update("dealershipName", v)} placeholder="e.g. Ford of Murfreesboro" />
+        <FieldInput value={data.dealershipName} onChange={(v) => update("dealershipName", v)} placeholder="e.g. Ford of Franklin" />
       </div>
 
       <Button

@@ -96,7 +96,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       {/* Caution Tape Warning */}
       <div className="rounded-xl overflow-hidden">
         <div className="caution-tape h-2" />
-        <div className="bg-warning p-4">
+        <div className="bg-warning/20 p-4">
           <p className="text-sm font-bold text-warning-foreground text-center">
             ⚠️ Never negotiate on monthly payment! 🔑 Always negotiate on total price, trade value, and interest rate separately!
           </p>

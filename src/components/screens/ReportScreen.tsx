@@ -172,7 +172,13 @@ const ReportScreen = ({ report, loading, onEditDeal, onStartOver }: Props) => {
       {report.negotiationScripts.length > 0 && (
         <div className="space-y-3 rounded-2xl bg-primary/5 border border-primary/15 p-5">
           <h3 className="text-sm font-heading text-primary uppercase tracking-wider">🗣️ Negotiation Scripts</h3>
-          {report.negotiationScripts.map((script, i) => (
+          {[...report.negotiationScripts]
+            .sort((a, b) => {
+              const amountA = report.lineItems.find((li) => li.name === a.item)?.amount ?? 0;
+              const amountB = report.lineItems.find((li) => li.name === b.item)?.amount ?? 0;
+              return amountB - amountA;
+            })
+            .map((script, i) => (
             <motion.div
               key={script.item}
               initial={{ opacity: 0, y: 10 }}
