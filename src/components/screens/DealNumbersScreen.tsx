@@ -77,11 +77,6 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
           </div>
-          <div className="mt-1.5 rounded-lg bg-accent/50 border border-accent px-3 py-2">
-            <p className="text-xs text-accent-foreground leading-relaxed">
-              💡 <span className="font-semibold">Did you know?</span> Dealers can legally add up to 2% to your lender's rate and keep the difference. Always ask for the <span className="font-semibold">"buy rate."</span>
-            </p>
-          </div>
         </div>
         <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Loan Term 📆</label>
@@ -96,6 +91,12 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             ))}
           </select>
         </div>
+      </div>
+
+      <div className="rounded-lg bg-accent/50 border border-accent px-3 py-2.5">
+        <p className="text-xs text-accent-foreground leading-relaxed">
+          💡 <span className="font-semibold">Did you know?</span> Dealers can legally add up to 2% to your lender's rate and keep the difference. Always ask for the <span className="font-semibold">"buy rate."</span>
+        </p>
       </div>
 
       {/* Caution Tape Warning */}
