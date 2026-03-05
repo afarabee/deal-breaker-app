@@ -1,8 +1,8 @@
 import { DealReport } from "@/types/deal";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
-import { Share2, Printer, GitCompareArrows } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Share2, Printer, GitCompareArrows, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   onRetry?: () => void;
   onEditDeal: () => void;
   onStartOver: () => void;
-  onCompare?: () => void;
+  onCompare?: (mode: "same" | "different") => void;
 }
 
 const statusColor = (s: "red" | "yellow" | "green") => {
@@ -75,6 +75,22 @@ const AnimatedScore = ({ grade }: { grade: string }) => {
 
 const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, onEditDeal, onStartOver, onCompare }: Props) => {
   const [showTimeout, setShowTimeout] = useState(false);
+  const [expandedScripts, setExpandedScripts] = useState<Set<string>>(new Set());
+  const [showCompareMenu, setShowCompareMenu] = useState(false);
+
+  // Expand first script when report loads
+  useEffect(() => {
+    if (report?.negotiationScripts?.length) {
+      const sorted = [...report.negotiationScripts].sort((a, b) => {
+        const aIsRate = a.item.toLowerCase().includes("interest") || a.item.toLowerCase().includes("rate");
+        const bIsRate = b.item.toLowerCase().includes("interest") || b.item.toLowerCase().includes("rate");
+        if (aIsRate && !bIsRate) return -1;
+        if (!aIsRate && bIsRate) return 1;
+        return 0;
+      });
+      setExpandedScripts(new Set([sorted[0].item]));
+    }
+  }, [report]);
 
   // Loading timeout — show message after 30 seconds
   useEffect(() => {
@@ -298,18 +314,50 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               const amountB = report.lineItems.find((li) => li.name === b.item)?.amount ?? 0;
               return amountB - amountA;
             })
-            .map((script, i) => (
-            <motion.div
-              key={script.item}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
-              className="rounded-xl bg-card border border-primary/10 p-4"
-            >
-              <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-2">{script.item}</p>
-              <p className="text-sm text-foreground italic leading-relaxed">"{script.script}"</p>
-            </motion.div>
-          ))}
+            .map((script, i) => {
+              const isExpanded = expandedScripts.has(script.item);
+              return (
+                <motion.div
+                  key={script.item}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 + i * 0.1, duration: 0.3 }}
+                  className="rounded-xl bg-card border border-primary/10 overflow-hidden"
+                >
+                  <button
+                    onClick={() => {
+                      setExpandedScripts((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(script.item)) {
+                          next.delete(script.item);
+                        } else {
+                          next.add(script.item);
+                        }
+                        return next;
+                      });
+                    }}
+                    className="w-full flex items-center justify-between p-4 text-left"
+                  >
+                    <p className="text-xs text-primary font-semibold uppercase tracking-wider">{script.item}</p>
+                    <ChevronDown className={`h-4 w-4 text-primary transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="px-4 pb-4">
+                          <p className="text-sm text-foreground italic leading-relaxed">"{script.script}"</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
         </div>
       )}
 
@@ -335,9 +383,29 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
         </div>
         <div className="flex items-center gap-2">
           {onCompare && (
-            <Button onClick={onCompare} variant="outline" size="sm">
-              <GitCompareArrows className="h-4 w-4 mr-1" /> Compare
-            </Button>
+            <div className="relative">
+              <Button onClick={() => setShowCompareMenu(!showCompareMenu)} variant="outline" size="sm">
+                <GitCompareArrows className="h-4 w-4 mr-1" /> Compare
+              </Button>
+              {showCompareMenu && (
+                <div className="absolute bottom-full mb-1 right-0 bg-card border border-border rounded-lg shadow-lg py-1 z-10 min-w-[180px]">
+                  <button
+                    onClick={() => { setShowCompareMenu(false); onCompare("same"); }}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors"
+                  >
+                    Same Vehicle
+                    <span className="block text-xs text-muted-foreground">Keep vehicle, new numbers</span>
+                  </button>
+                  <button
+                    onClick={() => { setShowCompareMenu(false); onCompare("different"); }}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors"
+                  >
+                    Different Vehicle
+                    <span className="block text-xs text-muted-foreground">Start fresh</span>
+                  </button>
+                </div>
+              )}
+            </div>
           )}
           <Button onClick={() => window.print()} variant="outline" size="sm">
             <Printer className="h-4 w-4 mr-1" /> Print

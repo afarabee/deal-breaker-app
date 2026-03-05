@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { VehicleInfo, DealData } from "@/types/deal";
-import { MAKES_MODELS, US_STATES } from "@/data/vehicleData";
+import { MAKES_MODELS, US_STATES, TRIMS } from "@/data/vehicleData";
 import { PRESET_A, PRESET_C, PRESET_F } from "@/data/presetDeals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,12 @@ interface Props {
 
 const presets = [
   { label: "A Deal ✅", data: PRESET_A, cls: "bg-success/15 text-success border-success/30" },
-  { label: "C Deal ⚠️", data: PRESET_C, cls: "bg-warning/15 text-warning-foreground border-warning/30" },
+  { label: "C Deal ⚠️", data: PRESET_C, cls: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700" },
   { label: "F Deal 🚩", data: PRESET_F, cls: "bg-destructive/15 text-destructive border-destructive/30" },
 ];
+
+const currentYear = new Date().getFullYear();
+const maxYear = currentYear + 2;
 
 const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
   <div className="relative">
@@ -32,9 +36,10 @@ const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange:
 );
 
 const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) => {
+  const [yearError, setYearError] = useState("");
   const makes = Object.keys(MAKES_MODELS);
   const models = data.make ? MAKES_MODELS[data.make] || [] : [];
-  const canProceed = data.condition && data.make && data.model;
+  const trims = data.make && data.model ? TRIMS[data.make]?.[data.model] || [] : [];
 
   const update = (field: keyof VehicleInfo, value: string) => {
     const next = { ...data, [field]: value };
@@ -42,8 +47,33 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       next.model = "";
       next.trim = "";
     }
+    if (field === "model") {
+      next.trim = "";
+    }
+    if (field === "year") {
+      setYearError("");
+    }
     onChange(next);
   };
+
+  const handleYearChange = (v: string) => {
+    // Only allow digits, max 4 characters
+    const cleaned = v.replace(/[^0-9]/g, "").slice(0, 4);
+    update("year", cleaned);
+  };
+
+  const validateAndProceed = () => {
+    if (data.year) {
+      const yr = parseInt(data.year, 10);
+      if (data.year.length !== 4 || isNaN(yr) || yr < 1990 || yr > maxYear) {
+        setYearError(`Year must be between 1990 and ${maxYear}`);
+        return;
+      }
+    }
+    onNext();
+  };
+
+  const canProceed = data.condition && data.make && data.model;
 
   return (
     <motion.div
@@ -54,7 +84,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       className="space-y-6 card-glow rounded-xl p-5 bg-card border border-border"
     >
       <div>
-        <h2 className="text-xl font-heading text-foreground">Your Vehicle 🚗🔑</h2>
+        <h2 className="text-xl font-heading text-foreground">Your Vehicle</h2>
         <p className="text-sm text-muted-foreground mt-1">Tell us about the vehicle you're looking at.</p>
       </div>
 
@@ -75,7 +105,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition 🚗</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition</label>
           <select
             value={data.condition}
             onChange={(e) => update("condition", e.target.value)}
@@ -87,14 +117,25 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year 📅</label>
-          <FieldInput value={data.year} onChange={(v) => update("year", v)} placeholder="e.g. 2026" />
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year</label>
+          <div>
+            <div className="relative">
+              <Input
+                value={data.year}
+                onChange={(e) => handleYearChange(e.target.value)}
+                placeholder="e.g. 2026"
+                className={`bg-input border-input-border input-glow focus:border-primary pr-9 ${yearError ? "border-destructive" : ""}`}
+              />
+              <Pencil className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+            </div>
+            {yearError && <p className="text-xs text-destructive mt-1">{yearError}</p>}
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make 🏭</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make</label>
           <select
             value={data.make}
             onChange={(e) => update("make", e.target.value)}
@@ -107,7 +148,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model 🚙</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</label>
           <select
             value={data.model}
             onChange={(e) => update("model", e.target.value)}
@@ -123,12 +164,25 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim ✨</label>
-        <FieldInput value={data.trim} onChange={(v) => update("trim", v)} placeholder="e.g. XLT, Lariat, Limited" />
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim</label>
+        {trims.length > 0 ? (
+          <select
+            value={data.trim}
+            onChange={(e) => update("trim", e.target.value)}
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+          >
+            <option value="">Select Trim</option>
+            {trims.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        ) : (
+          <FieldInput value={data.trim} onChange={(v) => update("trim", v)} placeholder="e.g. XLT, Lariat, Limited" />
+        )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Dealership State 📍</label>
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Dealership State</label>
         <select
           value={data.state}
           onChange={(e) => update("state", e.target.value)}
@@ -143,13 +197,13 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
 
       <div className="space-y-1.5">
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-          Dealership Name 🏢 <span className="normal-case text-muted-foreground">(optional)</span>
+          Dealership Name <span className="normal-case text-muted-foreground">(optional)</span>
         </label>
         <FieldInput value={data.dealershipName} onChange={(v) => update("dealershipName", v)} placeholder="e.g. Ford of Franklin" />
       </div>
 
       <Button
-        onClick={onNext}
+        onClick={validateAndProceed}
         disabled={!canProceed}
         variant="success"
         className="w-full h-12 text-base font-semibold rounded-xl"

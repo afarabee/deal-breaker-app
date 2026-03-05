@@ -120,6 +120,12 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
         <p className="text-xs text-muted-foreground text-center">
           Fee {activeFieldIndex + 1} of {ALL_FEES.length}
         </p>
+        <button
+          onClick={() => { setRapidMode(false); setActiveFieldIndex(null); }}
+          className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors text-center pt-1"
+        >
+          ← Back to form
+        </button>
       </motion.div>
     );
   }
@@ -247,7 +253,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={onBack}>← Back</Button>
-          <button onClick={onStartOver} className="text-sm text-destructive hover:text-destructive/80 font-medium">Start Over</button>
+          <Button variant="outline" onClick={onStartOver} className="text-destructive border-destructive/30 hover:bg-destructive/10">Start Over</Button>
         </div>
         <Button onClick={handleSubmit} variant="success" className="rounded-xl">Break This Deal</Button>
       </div>

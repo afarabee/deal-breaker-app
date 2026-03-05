@@ -149,15 +149,21 @@ const Index = () => {
     runAnalysis({ vehicle, numbers, fees });
   };
 
-  const handleCompare = () => {
+  const handleCompare = (mode: "same" | "different") => {
     if (report) {
       setComparisonDeal({ report, vehicle });
       setIsComparing(true);
       setNumbers(emptyNumbers);
       setFees(emptyFees);
-      setVehicle(emptyVehicle);
       setReport(null);
-      setStep(1);
+      if (mode === "same") {
+        // Keep vehicle info, go to deal numbers
+        setStep(3);
+      } else {
+        // Reset everything
+        setVehicle(emptyVehicle);
+        setStep(1);
+      }
     }
   };
 
@@ -190,7 +196,13 @@ const Index = () => {
                 key="vehicle"
                 data={vehicle}
                 onChange={setVehicle}
-                onNext={() => setStep(2)}
+                onNext={() => {
+                  if (sessionStorage.getItem("dealbreaker-skip-briefing")) {
+                    setStep(3);
+                  } else {
+                    setStep(2);
+                  }
+                }}
                 onPresetSelect={handlePresetSelect}
               />
             )}

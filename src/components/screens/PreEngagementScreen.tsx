@@ -65,6 +65,15 @@ const PreEngagementScreen = ({ onReady, onBack }: Props) => {
         <Button variant="outline" onClick={onBack}>← Back</Button>
         <Button variant="success" onClick={onReady}>I'm Ready →</Button>
       </div>
+      <button
+        onClick={() => {
+          sessionStorage.setItem("dealbreaker-skip-briefing", "true");
+          onReady();
+        }}
+        className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors text-center"
+      >
+        Skip this for now
+      </button>
     </motion.div>
   );
 };
