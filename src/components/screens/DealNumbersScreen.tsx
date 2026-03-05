@@ -110,6 +110,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
           onChange={(v) => update(field.key, v)}
           label={field.label}
           isPercentage={field.isPercentage}
+          doneLabel={activeFieldIndex < RAPID_FIELDS.length - 1 ? "Next" : "Done"}
           onDone={() => {
             if (activeFieldIndex < RAPID_FIELDS.length - 1) {
               setActiveFieldIndex(activeFieldIndex + 1);
@@ -118,9 +119,23 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             }
           }}
         />
-        <p className="text-xs text-muted-foreground text-center">
-          Field {activeFieldIndex + 1} of {RAPID_FIELDS.length}
-        </p>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              if (activeFieldIndex > 0) {
+                setActiveFieldIndex(activeFieldIndex - 1);
+              } else {
+                setActiveFieldIndex(null);
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Previous
+          </button>
+          <p className="text-xs text-muted-foreground">
+            Field {activeFieldIndex + 1} of {RAPID_FIELDS.length}
+          </p>
+        </div>
         <button
           onClick={() => { setRapidMode(false); setActiveFieldIndex(null); }}
           className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors text-center pt-1"

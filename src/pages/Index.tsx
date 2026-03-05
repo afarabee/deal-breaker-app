@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import DealHeader from "@/components/DealHeader";
 import VehicleInfoScreen from "@/components/screens/VehicleInfoScreen";
 import PreEngagementScreen from "@/components/screens/PreEngagementScreen";
@@ -46,6 +47,16 @@ const Index = () => {
   const [comparisonDeal, setComparisonDeal] = useState<{ report: DealReport; vehicle: VehicleInfo } | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [viewingDealAReport, setViewingDealAReport] = useState(false);
+  const [editingComparisonDeal, setEditingComparisonDeal] = useState<"A" | "B" | null>(null);
+
+  // Store full deal data for both deals in comparison (needed for edit/swap)
+  type FullDealData = { vehicle: VehicleInfo; numbers: DealNumbers; fees: FeeBreakdown; report: DealReport };
+  const [comparisonDealFull, setComparisonDealFull] = useState<{ A: FullDealData | null; B: FullDealData | null }>({ A: null, B: null });
+  const comparisonDealFullRef = useRef(comparisonDealFull);
+  comparisonDealFullRef.current = comparisonDealFull;
+  const editingRef = useRef(editingComparisonDeal);
+  editingRef.current = editingComparisonDeal;
 
   const startOver = () => {
     setStep(1);
@@ -59,6 +70,9 @@ const Index = () => {
     setIsComparing(false);
     setShowComparison(false);
     setShowStartOverConfirm(false);
+    setViewingDealAReport(false);
+    setEditingComparisonDeal(null);
+    setComparisonDealFull({ A: null, B: null });
   };
 
   const confirmStartOver = () => {
@@ -123,9 +137,42 @@ const Index = () => {
         report: reportData,
       });
 
-      // If comparing, show comparison view
+      // If comparing, handle comparison flow
       if (isComparing && comparisonDeal) {
-        setShowComparison(true);
+        const editing = editingRef.current;
+        const fullData = comparisonDealFullRef.current;
+
+        if (editing === "A") {
+          // We edited Deal A — update Deal A, restore Deal B as current
+          setComparisonDeal({ report: reportData, vehicle: dealData.vehicle });
+          setComparisonDealFull(prev => ({
+            ...prev,
+            A: { vehicle: dealData.vehicle, numbers: dealData.numbers, fees: dealData.fees, report: reportData },
+          }));
+          if (fullData.B) {
+            setReport(fullData.B.report);
+            setVehicle(fullData.B.vehicle);
+            setNumbers(fullData.B.numbers);
+            setFees(fullData.B.fees);
+          }
+          setEditingComparisonDeal(null);
+          setShowComparison(true);
+        } else if (editing === "B") {
+          // We edited Deal B — update Deal B data, current report is Deal B
+          setComparisonDealFull(prev => ({
+            ...prev,
+            B: { vehicle: dealData.vehicle, numbers: dealData.numbers, fees: dealData.fees, report: reportData },
+          }));
+          setEditingComparisonDeal(null);
+          setShowComparison(true);
+        } else {
+          // Normal comparison flow (first time Deal B is analyzed)
+          setComparisonDealFull(prev => ({
+            ...prev,
+            B: { vehicle: dealData.vehicle, numbers: dealData.numbers, fees: dealData.fees, report: reportData },
+          }));
+          setShowComparison(true);
+        }
       }
     } catch (e: any) {
       console.error("Analysis error:", e);
@@ -152,15 +199,16 @@ const Index = () => {
   const handleCompare = (mode: "same" | "different") => {
     if (report) {
       setComparisonDeal({ report, vehicle });
+      setComparisonDealFull({ A: { vehicle, numbers, fees, report }, B: null });
       setIsComparing(true);
-      setNumbers(emptyNumbers);
-      setFees(emptyFees);
       setReport(null);
       if (mode === "same") {
-        // Keep vehicle info, go to deal numbers
+        // Keep vehicle, numbers, and fees pre-filled so user can edit what changed
         setStep(3);
       } else {
-        // Reset everything
+        // Reset everything for a different vehicle
+        setNumbers(emptyNumbers);
+        setFees(emptyFees);
         setVehicle(emptyVehicle);
         setStep(1);
       }
@@ -175,6 +223,47 @@ const Index = () => {
     setStep(5);
     setLoading(false);
     setAnalysisError(false);
+  };
+
+  const handleViewDealAReport = () => {
+    setViewingDealAReport(true);
+    setShowComparison(false);
+  };
+
+  const handleBackToComparison = () => {
+    setViewingDealAReport(false);
+    setShowComparison(true);
+  };
+
+  const handleEditFromComparison = (deal: "A" | "B") => {
+    setEditingComparisonDeal(deal);
+    setShowComparison(false);
+    setViewingDealAReport(false);
+
+    if (deal === "A" && comparisonDealFull.A) {
+      // Save current Deal B data before loading Deal A
+      if (report) {
+        setComparisonDealFull(prev => ({
+          ...prev,
+          B: { vehicle, numbers, fees, report },
+        }));
+      }
+      // Load Deal A data into the form
+      setVehicle(comparisonDealFull.A.vehicle);
+      setNumbers(comparisonDealFull.A.numbers);
+      setFees(comparisonDealFull.A.fees);
+      setReport(null);
+      setStep(3);
+    } else if (deal === "B") {
+      // Load Deal B data (may already be current, but reload from stored if available)
+      if (comparisonDealFull.B) {
+        setVehicle(comparisonDealFull.B.vehicle);
+        setNumbers(comparisonDealFull.B.numbers);
+        setFees(comparisonDealFull.B.fees);
+      }
+      setReport(null);
+      setStep(3);
+    }
   };
 
   return (
@@ -233,7 +322,7 @@ const Index = () => {
                 onStartOver={confirmStartOver}
               />
             )}
-            {step === 5 && !showComparison && (
+            {step === 5 && !showComparison && !viewingDealAReport && (
               <ReportScreen
                 key="report"
                 report={report}
@@ -246,13 +335,30 @@ const Index = () => {
                 onCompare={handleCompare}
               />
             )}
+            {step === 5 && viewingDealAReport && comparisonDeal && (
+              <motion.div key="dealA-report" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="mb-4">
+                  <Button variant="outline" onClick={handleBackToComparison}>
+                    ← Back to Comparison
+                  </Button>
+                </div>
+                <ReportScreen
+                  report={comparisonDeal.report}
+                  loading={false}
+                  onEditDeal={() => {}}
+                  onStartOver={confirmStartOver}
+                />
+              </motion.div>
+            )}
             {step === 5 && showComparison && comparisonDeal && report && (
               <ComparisonView
                 key="comparison"
                 dealA={comparisonDeal}
                 dealB={{ report, vehicle }}
                 onClose={() => setShowComparison(false)}
+                onViewDealA={handleViewDealAReport}
                 onStartOver={confirmStartOver}
+                onEditDeal={handleEditFromComparison}
               />
             )}
           </AnimatePresence>

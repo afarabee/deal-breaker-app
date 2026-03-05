@@ -15,7 +15,7 @@ interface Props {
 }
 
 const presets = [
-  { label: "A Deal ✅", data: PRESET_A, cls: "bg-success/15 text-success border-success/30" },
+  { label: "A Deal ✅", data: PRESET_A, cls: "bg-success/15 text-green-800 dark:text-green-400 border-success/30" },
   { label: "C Deal ⚠️", data: PRESET_C, cls: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700" },
   { label: "F Deal 🚩", data: PRESET_F, cls: "bg-destructive/15 text-destructive border-destructive/30" },
 ];

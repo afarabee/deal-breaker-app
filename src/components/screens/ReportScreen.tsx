@@ -88,7 +88,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
         if (!aIsRate && bIsRate) return 1;
         return 0;
       });
-      setExpandedScripts(new Set([sorted[0].item]));
+      setExpandedScripts(new Set(report.negotiationScripts.map(s => s.item)));
     }
   }, [report]);
 
@@ -261,7 +261,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               className={`rounded-xl border p-3 text-center ${lever.color}`}
             >
               <p className="text-xs font-semibold mb-1">{lever.label}</p>
-              <p className={`text-sm font-bold ${c.text}`}>{lever.value}</p>
+              <p className="text-sm font-medium text-muted-foreground">{lever.value}</p>
             </motion.div>
           );
         })}

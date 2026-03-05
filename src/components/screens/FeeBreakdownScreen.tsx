@@ -109,6 +109,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
           value={data[field.key]}
           onChange={(v) => update(field.key, v)}
           label={field.label}
+          doneLabel={activeFieldIndex < ALL_FEES.length - 1 ? "Next" : "Done"}
           onDone={() => {
             if (activeFieldIndex < ALL_FEES.length - 1) {
               setActiveFieldIndex(activeFieldIndex + 1);
@@ -117,9 +118,23 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
             }
           }}
         />
-        <p className="text-xs text-muted-foreground text-center">
-          Fee {activeFieldIndex + 1} of {ALL_FEES.length}
-        </p>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              if (activeFieldIndex > 0) {
+                setActiveFieldIndex(activeFieldIndex - 1);
+              } else {
+                setActiveFieldIndex(null);
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Previous
+          </button>
+          <p className="text-xs text-muted-foreground">
+            Fee {activeFieldIndex + 1} of {ALL_FEES.length}
+          </p>
+        </div>
         <button
           onClick={() => { setRapidMode(false); setActiveFieldIndex(null); }}
           className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors text-center pt-1"

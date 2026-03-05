@@ -13,9 +13,10 @@ interface NumericKeypadProps {
   label: string;
   onDone: () => void;
   isPercentage?: boolean;
+  doneLabel?: string;
 }
 
-const NumericKeypad = ({ value, onChange, label, onDone, isPercentage }: NumericKeypadProps) => {
+const NumericKeypad = ({ value, onChange, label, onDone, isPercentage, doneLabel }: NumericKeypadProps) => {
   const append = (digit: string) => {
     if (digit === "." && value.includes(".")) return;
     onChange(value + digit);
@@ -56,7 +57,7 @@ const NumericKeypad = ({ value, onChange, label, onDone, isPercentage }: Numeric
           onClick={onDone}
           className="flex-1 h-10 rounded-lg bg-success text-success-foreground text-sm font-semibold hover:bg-success/90 transition-colors"
         >
-          Done
+          {doneLabel || "Done"}
         </button>
       </div>
     </div>

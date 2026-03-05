@@ -11,7 +11,9 @@ interface Props {
   dealA: ComparisonDeal;
   dealB: ComparisonDeal;
   onClose: () => void;
+  onViewDealA: () => void;
   onStartOver: () => void;
+  onEditDeal?: (deal: "A" | "B") => void;
 }
 
 const gradeColor = (grade: string) => {
@@ -32,7 +34,7 @@ const statusPill = (s: "red" | "yellow" | "green") => {
   return "bg-success text-success-foreground";
 };
 
-const ComparisonView = ({ dealA, dealB, onClose, onStartOver }: Props) => {
+const ComparisonView = ({ dealA, dealB, onClose, onViewDealA, onStartOver, onEditDeal }: Props) => {
   const vehicleLabel = (v: VehicleInfo) =>
     `${v.year} ${v.make} ${v.model}${v.trim ? " " + v.trim : ""}`;
 
@@ -52,10 +54,19 @@ const ComparisonView = ({ dealA, dealB, onClose, onStartOver }: Props) => {
       <div className="grid grid-cols-2 gap-3">
         {[dealA, dealB].map((deal, i) => (
           <div key={i} className={`text-center p-4 rounded-xl border border-border ${gradeBg(deal.report.dealScore)}`}>
+            <p className="text-xs text-muted-foreground mb-1">Deal {i === 0 ? "A" : "B"}</p>
             <p className="text-xs text-muted-foreground mb-1 truncate">{vehicleLabel(deal.vehicle)}</p>
             <p className={`text-4xl font-heading ${gradeColor(deal.report.dealScore)}`}>
               {deal.report.dealScore}
             </p>
+            {onEditDeal && (
+              <button
+                onClick={() => onEditDeal(i === 0 ? "A" : "B")}
+                className="mt-2 text-xs text-primary hover:underline"
+              >
+                Edit Deal {i === 0 ? "A" : "B"}
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -149,9 +160,12 @@ const ComparisonView = ({ dealA, dealB, onClose, onStartOver }: Props) => {
         })()}
       </div>
 
-      <div className="flex items-center justify-between pt-2">
-        <Button variant="outline" onClick={onClose}>View Deal B Report</Button>
-        <Button variant="outline" onClick={onStartOver}>Start Over</Button>
+      <div className="flex flex-col gap-2 pt-2">
+        <div className="flex items-center justify-between">
+          <Button variant="outline" size="sm" onClick={onViewDealA}>View Deal A Report</Button>
+          <Button variant="outline" size="sm" onClick={onClose}>View Deal B Report</Button>
+        </div>
+        <Button variant="outline" onClick={onStartOver} className="w-full">Start Over</Button>
       </div>
     </motion.div>
   );
