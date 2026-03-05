@@ -38,6 +38,7 @@ const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange:
 
 const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCompare }: Props) => {
   const [yearError, setYearError] = useState("");
+  const [showDemos, setShowDemos] = useState(false);
   const makes = Object.keys(MAKES_MODELS);
   const models = data.make ? MAKES_MODELS[data.make] || [] : [];
   const trims = data.make && data.model ? TRIMS[data.make]?.[data.model] || [] : [];
@@ -90,26 +91,33 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs text-muted-foreground tracking-wide">Try a sample deal →</p>
-        <div className="flex flex-wrap gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => onPresetSelect(p.data)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 ${p.cls}`}
-            >
-              {p.label}
-            </button>
-          ))}
-          {onPresetCompare && (
-            <button
-              onClick={onPresetCompare}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 bg-primary/15 text-primary border-primary/30"
-            >
-              A vs C Compare
-            </button>
-          )}
-        </div>
+        <button
+          onClick={() => setShowDemos(!showDemos)}
+          className="text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          {showDemos ? "Hide demos ↑" : "Try a demo →"}
+        </button>
+        {showDemos && (
+          <div className="flex flex-wrap gap-2">
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => onPresetSelect(p.data)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 ${p.cls}`}
+              >
+                {p.label}
+              </button>
+            ))}
+            {onPresetCompare && (
+              <button
+                onClick={onPresetCompare}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 bg-primary/15 text-primary border-primary/30"
+              >
+                Compare Deals
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
