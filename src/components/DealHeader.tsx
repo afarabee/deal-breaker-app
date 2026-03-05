@@ -29,7 +29,7 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
         <h1 className="text-2xl font-heading tracking-tight">
           <span className="text-foreground">DEAL</span>
           <span className="text-success">BREAKER</span>
-          <span className="ml-2">🥊</span>
+          <span className="ml-2">🔨</span>
         </h1>
         <div className="flex items-center gap-2">
           <FeedbackDialog />
