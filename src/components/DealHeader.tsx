@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import DealHistoryDrawer from "@/components/DealHistoryDrawer";
+import FeedbackDialog from "@/components/FeedbackDialog";
 import { SavedDeal } from "@/types/deal";
 
 interface DealHeaderProps {
@@ -30,7 +31,10 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
           <span className="text-success">BREAKER</span>
           <span className="ml-2">🥊</span>
         </h1>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <FeedbackDialog />
+          <ThemeToggle />
+        </div>
       </div>
       <div className="flex items-center justify-center gap-2">
         {steps.map((step) => (

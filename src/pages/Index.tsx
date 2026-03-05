@@ -9,6 +9,7 @@ import FeeBreakdownScreen from "@/components/screens/FeeBreakdownScreen";
 import ReportScreen from "@/components/screens/ReportScreen";
 import ComparisonView from "@/components/ComparisonView";
 import { VehicleInfo, DealNumbers, FeeBreakdown, DealData, DealReport, SavedDeal } from "@/types/deal";
+import { PRESET_A, PRESET_C } from "@/data/presetDeals";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useDealHistory } from "@/hooks/useDealHistory";
@@ -84,6 +85,7 @@ const Index = () => {
   };
 
   const pendingPreset = useRef<DealData | null>(null);
+  const [presetComparePhase, setPresetComparePhase] = useState<"idle" | "analyzingA" | "analyzingB">("idle");
 
   const handlePresetSelect = (preset: DealData) => {
     setVehicle(preset.vehicle);
@@ -196,6 +198,60 @@ const Index = () => {
     runAnalysis({ vehicle, numbers, fees });
   };
 
+  const handlePresetCompare = async () => {
+    setStep(5);
+    setLoading(true);
+    setReport(null);
+    setAnalysisError(false);
+    setPresetComparePhase("analyzingA");
+
+    try {
+      // Analyze Deal A (PRESET_A)
+      const { data: dataA, error: errorA } = await supabase.functions.invoke("analyze-deal", {
+        body: PRESET_A,
+      });
+      if (errorA) throw errorA;
+      const reportA = dataA as DealReport;
+
+      saveDeal({ vehicle: PRESET_A.vehicle, numbers: PRESET_A.numbers, fees: PRESET_A.fees, report: reportA });
+
+      // Store Deal A as comparison deal
+      setComparisonDeal({ report: reportA, vehicle: PRESET_A.vehicle });
+      setComparisonDealFull({ A: { vehicle: PRESET_A.vehicle, numbers: PRESET_A.numbers, fees: PRESET_A.fees, report: reportA }, B: null });
+      setIsComparing(true);
+      setPresetComparePhase("analyzingB");
+
+      // Analyze Deal B (PRESET_C)
+      const { data: dataB, error: errorB } = await supabase.functions.invoke("analyze-deal", {
+        body: PRESET_C,
+      });
+      if (errorB) throw errorB;
+      const reportB = dataB as DealReport;
+
+      saveDeal({ vehicle: PRESET_C.vehicle, numbers: PRESET_C.numbers, fees: PRESET_C.fees, report: reportB });
+
+      // Set Deal B as current
+      setVehicle(PRESET_C.vehicle);
+      setNumbers(PRESET_C.numbers);
+      setFees(PRESET_C.fees);
+      setReport(reportB);
+      setComparisonDealFull(prev => ({
+        ...prev,
+        B: { vehicle: PRESET_C.vehicle, numbers: PRESET_C.numbers, fees: PRESET_C.fees, report: reportB },
+      }));
+      setShowComparison(true);
+    } catch (e: any) {
+      console.error("Preset compare error:", e);
+      const friendly = parseErrorMessage(e);
+      setErrorMessage(friendly);
+      setAnalysisError(true);
+      toast({ title: "Analysis failed", description: friendly, variant: "destructive" });
+    } finally {
+      setLoading(false);
+      setPresetComparePhase("idle");
+    }
+  };
+
   const handleCompare = (mode: "same" | "different") => {
     if (report) {
       setComparisonDeal({ report, vehicle });
@@ -293,6 +349,7 @@ const Index = () => {
                   }
                 }}
                 onPresetSelect={handlePresetSelect}
+                onPresetCompare={handlePresetCompare}
               />
             )}
             {step === 2 && (

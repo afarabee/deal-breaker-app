@@ -12,6 +12,7 @@ interface Props {
   onChange: (data: VehicleInfo) => void;
   onNext: () => void;
   onPresetSelect: (preset: DealData) => void;
+  onPresetCompare?: () => void;
 }
 
 const presets = [
@@ -35,7 +36,7 @@ const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange:
   </div>
 );
 
-const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) => {
+const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCompare }: Props) => {
   const [yearError, setYearError] = useState("");
   const makes = Object.keys(MAKES_MODELS);
   const models = data.make ? MAKES_MODELS[data.make] || [] : [];
@@ -90,7 +91,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
 
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground tracking-wide">Try a sample deal →</p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {presets.map((p) => (
             <button
               key={p.label}
@@ -100,6 +101,14 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect }: Props) =>
               {p.label}
             </button>
           ))}
+          {onPresetCompare && (
+            <button
+              onClick={onPresetCompare}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors hover:opacity-80 bg-primary/15 text-primary border-primary/30"
+            >
+              A vs C Compare
+            </button>
+          )}
         </div>
       </div>
 

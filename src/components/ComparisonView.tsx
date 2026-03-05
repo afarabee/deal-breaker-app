@@ -1,5 +1,6 @@
 import { DealReport, VehicleInfo } from "@/types/deal";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 
 interface ComparisonDeal {
@@ -89,11 +90,17 @@ const ComparisonView = ({ dealA, dealB, onClose, onViewDealA, onStartOver, onEdi
             {[dealA, dealB].map((deal, i) => {
               const analysis = deal.report.leverAnalysis[lever];
               return (
-                <div key={i} className="p-2 rounded-lg border border-border bg-card text-center">
-                  <p className="text-xs text-muted-foreground capitalize">{lever}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${statusPill(analysis.status)}`}>
-                    {analysis.assessment.length > 30 ? analysis.assessment.slice(0, 30) + "..." : analysis.assessment}
-                  </span>
+                <div key={i} className="p-3 rounded-lg border border-border bg-card">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${analysis.status === "red" ? "bg-destructive" : analysis.status === "yellow" ? "bg-warning" : "bg-success"}`} />
+                    <p className="text-xs font-semibold text-foreground capitalize">{lever}</p>
+                    {lever === "trade" && "equity" in analysis && (
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {analysis.isNegative ? "-" : ""}${Math.abs(analysis.equity).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{analysis.assessment}</p>
                 </div>
               );
             })}
@@ -145,9 +152,20 @@ const ComparisonView = ({ dealA, dealB, onClose, onViewDealA, onStartOver, onEdi
                     {item ? (
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-xs text-muted-foreground">${item.amount.toLocaleString()}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${statusPill(item.status)}`}>
-                          {item.status === "red" ? "Push Back" : item.status === "yellow" ? "Review" : "Fair"}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold cursor-help ${statusPill(item.status)}`}>
+                              {item.status === "red" ? "Push Back" : item.status === "yellow" ? "Review" : "Fair"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[200px] text-xs">
+                            {item.status === "red"
+                              ? "This item is overpriced or a junk fee. Push back hard or ask to have it removed entirely."
+                              : item.status === "yellow"
+                              ? "This item may be reasonable, but you should compare pricing and negotiate before agreeing."
+                              : "This item appears fair and within normal range. No action needed."}
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     ) : (
                       <p className="text-xs text-muted-foreground mt-1">N/A</p>

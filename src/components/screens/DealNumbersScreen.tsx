@@ -48,6 +48,7 @@ const RAPID_FIELDS: FieldConfig[] = [
 
 const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Props) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [warnings, setWarnings] = useState<Record<string, string>>({});
   const [rapidMode, setRapidMode] = useState(false);
   const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
 
@@ -86,6 +87,27 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
     if (data.monthlyPayment && (isNaN(monthly) || monthly < 0)) {
       newErrors.monthlyPayment = "Enter a valid amount";
     }
+
+    // Soft warning: monthly payment sanity check
+    const newWarnings: Record<string, string> = {};
+    if (data.monthlyPayment && data.sellingPrice && data.loanTerm) {
+      const mp = parseFloat(data.monthlyPayment);
+      const sp = parseFloat(data.sellingPrice);
+      const dp = parseFloat(data.downPayment) || 0;
+      const tv = parseFloat(data.tradeInValue) || 0;
+      const tp = parseFloat(data.tradePayoff) || 0;
+      const termMonths = parseInt(data.loanTerm);
+      if (!isNaN(mp) && !isNaN(sp) && termMonths > 0) {
+        const amountFinanced = sp - dp - tv + tp;
+        const roughMonthly = amountFinanced / termMonths;
+        if (roughMonthly > 0 && mp < roughMonthly * 0.5) {
+          newWarnings.monthlyPayment = "This payment seems unusually low for the deal numbers entered. Double-check with the dealer.";
+        } else if (roughMonthly > 0 && mp > roughMonthly * 2) {
+          newWarnings.monthlyPayment = "This payment seems unusually high for the deal numbers entered. Double-check with the dealer.";
+        }
+      }
+    }
+    setWarnings(newWarnings);
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -324,6 +346,9 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             <p className="text-xs text-warning-foreground">
               We include this only to check their math. If the quoted payment doesn't match the numbers, we'll flag it.
             </p>
+            {warnings.monthlyPayment && (
+              <p className="text-xs text-warning-foreground font-medium mt-1">{warnings.monthlyPayment}</p>
+            )}
           </div>
         </div>
         <div className="caution-tape h-2" />
