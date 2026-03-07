@@ -26,11 +26,13 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
         ) : (
           <div className="w-8" />
         )}
-        <h1 className="text-2xl font-heading tracking-tight">
-          <span className="text-foreground">DEAL</span>
-          <span className="text-success">BREAKER</span>
-          <span className="ml-2">🔨</span>
-        </h1>
+        <div className="h-10 overflow-hidden">
+          <img
+            src="/db-logo.png"
+            alt="DealBreaker"
+            className="h-20 w-auto object-cover object-top"
+          />
+        </div>
         <div className="flex items-center gap-2">
           <FeedbackDialog />
           <ThemeToggle />

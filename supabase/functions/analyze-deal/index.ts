@@ -37,6 +37,17 @@ Analyze every line item and return a JSON response with this exact structure:
 }
 
 Rules for evaluation:
+
+SELLING PRICE EVALUATION (critical — do not assume MSRP = fair price):
+- MSRP is the manufacturer's SUGGESTED retail price — it is a ceiling, not a target. Most buyers should pay BELOW MSRP.
+- Invoice price (what the dealer actually paid) is typically 3-8% below MSRP depending on the vehicle segment.
+- A fair selling price for most new vehicles is between invoice and MSRP. For common models (sedans, standard SUVs, trucks that aren't limited-production), a good deal is typically 3-10% below MSRP.
+- High-demand, low-supply, or limited-production vehicles (e.g., new model launches, specialty trims, performance editions) may legitimately sell at or slightly above MSRP. Acknowledge this context if the vehicle is likely high-demand.
+- If the selling price appears to be at or above what MSRP would be for this year/make/model/trim, flag the price lever as YELLOW or RED with an explanation. Generate a negotiation script instructing the buyer to ask "What is the invoice price?" and to negotiate down from there.
+- For used vehicles, there is no MSRP. Evaluate based on age, typical depreciation patterns, and whether the price seems reasonable for the year/make/model.
+- Dealer holdback (1-3% of MSRP) is an additional hidden profit margin dealers receive from the manufacturer. Mention this in negotiation scripts when relevant — even at "invoice price," the dealer still profits from holdback and manufacturer incentives.
+- Always include a price assessment in leverAnalysis.price that reflects whether the selling price represents a fair deal relative to expected market pricing, not just relative to MSRP.
+
 - Government fees (sales tax, registration, title) are always GREEN
 - Doc/Admin fees: Compare to state caps. Tennessee has NO cap. National average is ~$400. Flag RED if above $500.
 - Anti-theft, etch, nitrogen fill, paint protection, fabric guard, VIN etching, pinstripe: These are dealer-installed junk fees. Always RED if present.
