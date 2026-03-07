@@ -418,6 +418,9 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
       <p className="text-xs text-muted-foreground text-center no-print">
         Tip: Choose "Save as PDF" in the print dialog to save a copy
       </p>
+      <p className="text-[10px] text-muted-foreground/60 text-center mt-4 max-w-md mx-auto leading-relaxed no-print">
+        Responses aren't financial, legal, or tax advice—consult qualified professionals and verify claims. ChatGPT can make mistakes, including editing or deleting content.
+      </p>
     </motion.div>
   );
 };
