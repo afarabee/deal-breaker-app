@@ -38,15 +38,29 @@ Analyze every line item and return a JSON response with this exact structure:
 
 Rules for evaluation:
 
-SELLING PRICE EVALUATION (critical — do not assume MSRP = fair price):
-- MSRP is the manufacturer's SUGGESTED retail price — it is a ceiling, not a target. Most buyers should pay BELOW MSRP.
-- Invoice price (what the dealer actually paid) is typically 3-8% below MSRP depending on the vehicle segment.
-- A fair selling price for most new vehicles is between invoice and MSRP. For common models (sedans, standard SUVs, trucks that aren't limited-production), a good deal is typically 3-10% below MSRP.
-- High-demand, low-supply, or limited-production vehicles (e.g., new model launches, specialty trims, performance editions) may legitimately sell at or slightly above MSRP. Acknowledge this context if the vehicle is likely high-demand.
-- If the selling price appears to be at or above what MSRP would be for this year/make/model/trim, flag the price lever as YELLOW or RED with an explanation. Generate a negotiation script instructing the buyer to ask "What is the invoice price?" and to negotiate down from there.
-- For used vehicles, there is no MSRP. Evaluate based on age, typical depreciation patterns, and whether the price seems reasonable for the year/make/model.
-- Dealer holdback (1-3% of MSRP) is an additional hidden profit margin dealers receive from the manufacturer. Mention this in negotiation scripts when relevant — even at "invoice price," the dealer still profits from holdback and manufacturer incentives.
-- Always include a price assessment in leverAnalysis.price that reflects whether the selling price represents a fair deal relative to expected market pricing, not just relative to MSRP.
+SELLING PRICE EVALUATION — THIS IS THE MOST IMPORTANT SECTION. READ CAREFULLY:
+
+You MUST use your knowledge of vehicle pricing to evaluate the selling price. Do NOT default to "appears reasonable" or "in line with market conditions" — that is lazy analysis and unhelpful to the buyer.
+
+Step 1: Estimate the MSRP for the exact year/make/model/trim provided. You have training data on vehicle pricing — use it. State your MSRP estimate explicitly in the assessment (e.g., "The 2026 F-350 Platinum has an estimated MSRP of approximately $85,000-$95,000").
+
+Step 2: Compare the selling price to your MSRP estimate using these STRICT rules:
+- Selling price MORE THAN 5% ABOVE your MSRP estimate: RED. This is a dealer markup (also called "market adjustment" or "ADM"). The buyer is being overcharged. Calculate the dollar amount above MSRP.
+- Selling price WITHIN 5% of your MSRP estimate (at or slightly above/below): YELLOW. The buyer is paying sticker price or close to it. Most buyers can negotiate below MSRP.
+- Selling price 5-10% BELOW your MSRP estimate: GREEN. This is a fair deal — the buyer negotiated below sticker.
+- Selling price MORE THAN 10% BELOW your MSRP estimate: GREEN. This is an excellent deal.
+
+Step 3: ALWAYS generate a negotiation script for the selling price unless it is already 10%+ below MSRP. The script must:
+- State the estimated MSRP and how the selling price compares
+- Instruct the buyer to ask "What is the invoice price for this vehicle?"
+- Explain that invoice price (what the dealer paid) is typically 3-8% below MSRP
+- Explain that dealer holdback (1-3% of MSRP) means dealers profit even at invoice price
+- Suggest a target price (invoice + $500 for a fair deal, or MSRP minus 8-10% as a starting offer)
+- Include the estimated dollar savings if the buyer negotiates to the target
+
+NEVER say a price "appears reasonable" just because it is close to MSRP. MSRP is the MAXIMUM a buyer should pay, not the expected price. Paying MSRP means the buyer left money on the table.
+
+For used vehicles: There is no MSRP. Estimate fair market value based on the year, make, model, trim, and typical depreciation (roughly 15-20% in year 1, 10-15% per year after). Flag RED if the price seems high for the age/model, YELLOW if it seems average, GREEN if it seems like a good value.
 
 - Government fees (sales tax, registration, title) are always GREEN
 - Doc/Admin fees: Compare to state caps. Tennessee has NO cap. National average is ~$400. Flag RED if above $500.

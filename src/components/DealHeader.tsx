@@ -26,7 +26,7 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
         ) : (
           <div className="w-8" />
         )}
-        <div className="h-10 overflow-hidden">
+        <div className="h-10 bg-black rounded-lg overflow-hidden px-3 flex items-center">
           <img
             src="/db-logo.png"
             alt="DealBreaker"
