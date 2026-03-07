@@ -28,18 +28,8 @@ const FeedbackDialog = () => {
 
     setSubmitting(true);
     try {
-      const parts: string[] = [];
-      if (name) parts.push(`From: ${name}`);
-      if (email) parts.push(`Email: ${email}`);
-      parts.push(`\n${feedback}`);
-      const description = parts.join("\n");
-      const title = `[DealBreaker ${category}] ${feedback.slice(0, 80)}${feedback.length > 80 ? "..." : ""}`;
-
-      const { error } = await cosSupabase.from("cos_ideas").insert({
-        title,
-        description,
-        status: "New",
-        category_id: "fec0d3b9-7a5b-4ab5-a526-b21b17cb09e8",
+      const { data, error } = await supabase.functions.invoke("submit-feedback", {
+        body: { name, email, feedback, category },
       });
 
       if (error) throw error;
