@@ -220,7 +220,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
         variant="success"
         className="w-full h-12 text-base font-semibold rounded-xl"
       >
-        Analyze My Deal →
+        <Hammer className="h-5 w-5" /> Let's Break My Deal →
       </Button>
     </motion.div>
   );
