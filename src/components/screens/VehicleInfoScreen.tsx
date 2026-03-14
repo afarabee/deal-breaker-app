@@ -134,7 +134,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Year</label>
           <div>
             <div className="relative">
               <Input
