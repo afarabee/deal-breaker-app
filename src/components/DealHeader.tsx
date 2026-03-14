@@ -43,7 +43,7 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
         ) : (
           <div className="w-8" />
         )}
-        <img src={logoDark} alt="DealBreaker" className="h-24 hidden dark:block mix-blend-screen" />
+        <img src={logoDark} alt="DealBreaker" className="h-24 hidden dark:block mix-blend-lighten" />
         <img src={logoLight} alt="DealBreaker" className="h-24 dark:hidden mix-blend-multiply" />
         <div className="flex items-center gap-2">
           <FeedbackDialog />
