@@ -233,7 +233,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
           {data.customFees.map((fee) => (
             <div key={fee.id} className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Fee Name</label>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Fee Name</label>
                 <div className="relative">
                   <Input
                     value={fee.name}
