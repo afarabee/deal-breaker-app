@@ -39,7 +39,6 @@ const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange:
 
 const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCompare }: Props) => {
   const [yearError, setYearError] = useState("");
-  const [showDemos, setShowDemos] = useState(false);
   const makes = Object.keys(MAKES_MODELS);
   const models = data.make ? MAKES_MODELS[data.make] || [] : [];
   const trims = data.make && data.model ? TRIMS[data.make]?.[data.model] || [] : [];
