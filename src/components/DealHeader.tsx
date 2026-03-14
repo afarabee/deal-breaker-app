@@ -88,7 +88,8 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
             >
               <div className="mt-2 p-3 rounded-lg bg-secondary/50 border border-border text-xs leading-relaxed space-y-2">
                 <p className="text-muted-foreground">
-                  DealBreaker is an AI-powered car deal auditor.  Enter your offer details and get a fairness grade, red-flag alerts, and ready-to-use negotiation scripts.
+                  <span className="font-semibold">DealBreaker is an AI-powered car deal auditor.</span>{" "}
+                  Enter your offer details and get a fairness grade, red-flag alerts, and ready-to-use negotiation scripts.
                 </p>
                 <div className="flex items-start gap-1.5 text-warning">
                   <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
