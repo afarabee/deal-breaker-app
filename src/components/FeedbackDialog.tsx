@@ -34,7 +34,7 @@ const FeedbackDialog = () => {
 
       if (error) throw error;
 
-      toast({ title: "Thanks for your feedback!", description: "We'll review it soon." });
+      toast({ title: "Thanks for your feedback!", description: "Hang tight and while we have a look!" });
       setName("");
       setEmail("");
       setFeedback("");
