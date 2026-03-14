@@ -122,11 +122,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Condition</label>
           <select
             value={data.condition}
             onChange={(e) => update("condition", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="" className="text-muted-foreground">Select</option>
             <option value="New">New</option>
