@@ -4,7 +4,7 @@ import { MAKES_MODELS, US_STATES, TRIMS } from "@/data/vehicleData";
 import { PRESET_A, PRESET_C, PRESET_F } from "@/data/presetDeals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil } from "lucide-react";
+import { Pencil, Hammer } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -220,7 +220,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
         variant="success"
         className="w-full h-12 text-base font-semibold rounded-xl"
       >
-        Analyze My Deal →
+        <Hammer className="h-5 w-5" /> Let's Break My Deal →
       </Button>
     </motion.div>
   );
