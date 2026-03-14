@@ -23,8 +23,15 @@ const FeedbackDialog = () => {
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
+  const isValidEmail = (val: string) =>
+    !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
   const handleSubmit = async () => {
     if (!feedback.trim()) return;
+    if (email && !isValidEmail(email)) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
 
     setSubmitting(true);
     try {
