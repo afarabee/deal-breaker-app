@@ -23,6 +23,7 @@ const presets = [
 
 const currentYear = new Date().getFullYear();
 const maxYear = currentYear + 2;
+const YEARS = Array.from({ length: maxYear - 1990 + 1 }, (_, i) => maxYear - i);
 
 const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
   <div className="relative field-glow rounded-md">
