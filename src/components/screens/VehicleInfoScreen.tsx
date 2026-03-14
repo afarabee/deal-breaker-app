@@ -25,7 +25,7 @@ const currentYear = new Date().getFullYear();
 const maxYear = currentYear + 2;
 
 const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
-  <div className="relative">
+  <div className="relative field-glow rounded-md">
     <Input
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -122,11 +122,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Condition</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Condition</label>
           <select
             value={data.condition}
             onChange={(e) => update("condition", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="" className="text-muted-foreground">Select</option>
             <option value="New">New</option>
@@ -134,11 +134,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Year</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Year</label>
           <div>
             <div className="relative">
               <Input
                 value={data.year}
+
                 onChange={(e) => handleYearChange(e.target.value)}
                 placeholder="e.g. 2026"
                 className={`bg-input border-input-border input-glow focus:border-primary pr-9 ${yearError ? "border-destructive" : ""}`}
@@ -152,11 +153,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Make</label>
           <select
             value={data.make}
             onChange={(e) => update("make", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="">Select Make</option>
             {makes.map((m) => (
@@ -165,12 +166,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Model</label>
           <select
             value={data.model}
             onChange={(e) => update("model", e.target.value)}
             disabled={!data.make}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary disabled:opacity-50"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary disabled:opacity-50"
           >
             <option value="">Select Model</option>
             {models.map((m) => (
@@ -181,12 +182,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim</label>
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Trim</label>
         {trims.length > 0 ? (
           <select
             value={data.trim}
             onChange={(e) => update("trim", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="">Select Trim</option>
             {trims.map((t) => (
@@ -199,11 +200,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Dealership State</label>
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Dealership State</label>
         <select
           value={data.state}
           onChange={(e) => update("state", e.target.value)}
-          className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+          className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
         >
           <option value="">Select State</option>
           {US_STATES.map((s) => (
@@ -213,7 +214,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">
           Dealership Name <span className="normal-case text-muted-foreground">(optional)</span>
         </label>
         <FieldInput value={data.dealershipName} onChange={(v) => update("dealershipName", v)} placeholder="e.g. Ford of Franklin" />

@@ -212,7 +212,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
         <div className="space-y-3">
           {STANDARD_FEES.map((field) => (
             <div key={field.key} className="space-y-1.5">
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{field.label}</label>
+              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">{field.label}</label>
               <CurrencyInput value={data[field.key]} onChange={(v) => update(field.key, v)} placeholder={field.placeholder} error={errors[field.key]} />
             </div>
           ))}
@@ -225,7 +225,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
         <div className="space-y-3">
           {ADDON_FEES.map((field) => (
             <div key={field.key} className="space-y-1.5">
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{field.label}</label>
+              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">{field.label}</label>
               <CurrencyInput value={data[field.key]} onChange={(v) => update(field.key, v)} placeholder={field.placeholder} error={errors[field.key]} />
             </div>
           ))}
@@ -233,7 +233,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
           {data.customFees.map((fee) => (
             <div key={fee.id} className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Fee Name</label>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Fee Name</label>
                 <div className="relative">
                   <Input
                     value={fee.name}
@@ -245,7 +245,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Amount</label>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Amount</label>
                 <CurrencyInput
                   value={fee.amount}
                   onChange={(v) => updateCustomFee(fee.id, "amount", v)}

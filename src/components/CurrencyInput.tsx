@@ -17,7 +17,7 @@ interface CurrencyInputProps {
 
 const CurrencyInput = ({ value, onChange, placeholder, error }: CurrencyInputProps) => (
   <div>
-    <div className="relative">
+    <div className="relative field-glow rounded-md">
       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
       <Input
         value={formatWithCommas(value)}
