@@ -4,6 +4,8 @@ import { ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import DealHistoryDrawer from "@/components/DealHistoryDrawer";
 import FeedbackDialog from "@/components/FeedbackDialog";
+import logoDark from "@/assets/logo-dark.png";
+import logoLight from "@/assets/logo-light.png";
 import { SavedDeal } from "@/types/deal";
 
 interface DealHeaderProps {
