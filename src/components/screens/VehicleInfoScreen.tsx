@@ -166,12 +166,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Model</label>
           <select
             value={data.model}
             onChange={(e) => update("model", e.target.value)}
             disabled={!data.make}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary disabled:opacity-50"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary disabled:opacity-50"
           >
             <option value="">Select Model</option>
             {models.map((m) => (
