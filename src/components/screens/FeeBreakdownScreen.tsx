@@ -225,7 +225,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
         <div className="space-y-3">
           {ADDON_FEES.map((field) => (
             <div key={field.key} className="space-y-1.5">
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{field.label}</label>
+              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">{field.label}</label>
               <CurrencyInput value={data[field.key]} onChange={(v) => update(field.key, v)} placeholder={field.placeholder} error={errors[field.key]} />
             </div>
           ))}
