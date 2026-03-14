@@ -59,9 +59,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
   };
 
   const handleYearChange = (v: string) => {
-    // Only allow digits, max 4 characters
-    const cleaned = v.replace(/[^0-9]/g, "").slice(0, 4);
-    update("year", cleaned);
+    update("year", v);
   };
 
   const validateAndProceed = () => {
