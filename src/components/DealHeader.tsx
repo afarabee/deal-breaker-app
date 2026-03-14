@@ -4,6 +4,8 @@ import { ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import DealHistoryDrawer from "@/components/DealHistoryDrawer";
 import FeedbackDialog from "@/components/FeedbackDialog";
+import logoDark from "@/assets/logo-dark.png";
+import logoLight from "@/assets/logo-light.png";
 import { SavedDeal } from "@/types/deal";
 
 interface DealHeaderProps {
@@ -41,11 +43,8 @@ const DealHeader = ({ currentStep, deals = [], onHistorySelect, onHistoryDelete 
         ) : (
           <div className="w-8" />
         )}
-        <h1 className="text-2xl font-heading tracking-tight">
-          <span className="text-foreground">DEAL</span>
-          <span className="text-success">BREAKER</span>
-          <span className="ml-2">🔨</span>
-        </h1>
+        <img src={logoDark} alt="DealBreaker" className="h-10 hidden dark:block" />
+        <img src={logoLight} alt="DealBreaker" className="h-10 dark:hidden" />
         <div className="flex items-center gap-2">
           <FeedbackDialog />
           <ThemeToggle />
