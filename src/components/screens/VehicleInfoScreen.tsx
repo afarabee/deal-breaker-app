@@ -25,7 +25,7 @@ const currentYear = new Date().getFullYear();
 const maxYear = currentYear + 2;
 
 const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
-  <div className="relative">
+  <div className="relative field-glow rounded-md">
     <Input
       value={value}
       onChange={(e) => onChange(e.target.value)}
