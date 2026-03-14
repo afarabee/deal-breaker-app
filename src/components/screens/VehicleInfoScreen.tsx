@@ -139,6 +139,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
             <div className="relative">
               <Input
                 value={data.year}
+
                 onChange={(e) => handleYearChange(e.target.value)}
                 placeholder="e.g. 2026"
                 className={`bg-input border-input-border input-glow focus:border-primary pr-9 ${yearError ? "border-destructive" : ""}`}
