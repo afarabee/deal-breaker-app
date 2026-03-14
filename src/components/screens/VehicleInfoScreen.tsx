@@ -23,6 +23,7 @@ const presets = [
 
 const currentYear = new Date().getFullYear();
 const maxYear = currentYear + 2;
+const YEARS = Array.from({ length: maxYear - 1990 + 1 }, (_, i) => maxYear - i);
 
 const FieldInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) => (
   <div className="relative field-glow rounded-md">
@@ -59,9 +60,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
   };
 
   const handleYearChange = (v: string) => {
-    // Only allow digits, max 4 characters
-    const cleaned = v.replace(/[^0-9]/g, "").slice(0, 4);
-    update("year", cleaned);
+    update("year", v);
   };
 
   const validateAndProceed = () => {
@@ -135,19 +134,15 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
         </div>
         <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Year</label>
-          <div>
-            <div className="relative">
-              <Input
-                value={data.year}
-
-                onChange={(e) => handleYearChange(e.target.value)}
-                placeholder="e.g. 2026"
-                className={`bg-input border-input-border input-glow focus:border-primary pr-9 ${yearError ? "border-destructive" : ""}`}
-              />
-              <Pencil className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
-            </div>
-            {yearError && <p className="text-xs text-destructive mt-1">{yearError}</p>}
-          </div>
+          <select
+            value={data.year}
+            onChange={(e) => handleYearChange(e.target.value)}
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
+          >
+            {YEARS.map((y) => (
+              <option key={y} value={String(y)}>{y}</option>
+            ))}
+          </select>
         </div>
       </div>
 
