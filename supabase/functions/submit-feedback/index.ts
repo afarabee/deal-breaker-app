@@ -69,7 +69,7 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             from: "DealBreaker <onboarding@resend.dev>",
-            to: ["aimeeinybor@gmail.com"],
+            to: ["aimee.farabee@gmail.com"],
             subject: title,
             text: description,
           }),
