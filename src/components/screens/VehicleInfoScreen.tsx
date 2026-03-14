@@ -153,11 +153,11 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Make</label>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Make</label>
           <select
             value={data.make}
             onChange={(e) => update("make", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="">Select Make</option>
             {makes.map((m) => (
