@@ -182,12 +182,12 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trim</label>
+        <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Trim</label>
         {trims.length > 0 ? (
           <select
             value={data.trim}
             onChange={(e) => update("trim", e.target.value)}
-            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow focus:outline-none focus:border-primary"
+            className="w-full h-10 rounded-md bg-input border border-input-border px-3 text-sm text-foreground input-glow field-glow focus:outline-none focus:border-primary"
           >
             <option value="">Select Trim</option>
             {trims.map((t) => (
