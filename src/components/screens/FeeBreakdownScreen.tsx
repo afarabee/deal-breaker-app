@@ -245,7 +245,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Amount</label>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium field-label">Amount</label>
                 <CurrencyInput
                   value={fee.amount}
                   onChange={(v) => updateCustomFee(fee.id, "amount", v)}
