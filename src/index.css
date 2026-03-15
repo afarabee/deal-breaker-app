@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 220 15% 95%;
     --foreground: 220 20% 15%;
 
     --card: 0 0% 100%;
@@ -43,28 +43,33 @@
 
     --font-heading: 'Archivo Black', sans-serif;
     --font-body: 'DM Sans', sans-serif;
+    --font-instrument: 'Orbitron', sans-serif;
+
+    --gauge-glow: 142 71% 45%;
+    --panel-bg: 220 15% 92%;
+    --panel-border: 220 13% 82%;
   }
 
   .dark {
-    --background: 220 20% 7%;
+    --background: 220 25% 5%;
     --foreground: 220 15% 90%;
 
-    --card: 220 20% 10%;
+    --card: 220 25% 8%;
     --card-foreground: 220 15% 90%;
 
-    --popover: 220 20% 10%;
+    --popover: 220 25% 8%;
     --popover-foreground: 220 15% 90%;
 
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 15%;
+    --secondary: 220 20% 12%;
     --secondary-foreground: 220 15% 90%;
 
-    --muted: 220 15% 18%;
+    --muted: 220 20% 14%;
     --muted-foreground: 220 10% 55%;
 
-    --accent: 220 15% 20%;
+    --accent: 220 20% 16%;
     --accent-foreground: 220 15% 90%;
 
     --destructive: 0 72% 51%;
@@ -76,10 +81,14 @@
     --warning: 48 96% 53%;
     --warning-foreground: 48 10% 90%;
 
-    --border: 220 15% 20%;
-    --input: 220 20% 13%;
-    --input-border: 220 15% 25%;
+    --border: 220 20% 16%;
+    --input: 220 25% 10%;
+    --input-border: 220 20% 20%;
     --ring: 217 91% 60%;
+
+    --gauge-glow: 142 71% 45%;
+    --panel-bg: 220 25% 6%;
+    --panel-border: 220 20% 14%;
   }
 }
 
@@ -91,6 +100,17 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    /* Subtle carbon fiber texture */
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(220 15% 50% / 0.04) 1px, transparent 0);
+    background-size: 8px 8px;
+  }
+
+  .dark body,
+  .dark {
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(220 20% 30% / 0.15) 1px, transparent 0);
+    background-size: 8px 8px;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -99,6 +119,93 @@
 }
 
 @layer components {
+  /* Instrument panel — dark recessed cockpit look */
+  .instrument-panel {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: 1rem;
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.05),
+      inset 0 -2px 6px hsl(220 30% 10% / 0.08),
+      0 4px 20px hsl(220 30% 10% / 0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .instrument-panel {
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.03),
+      inset 0 -2px 8px hsl(220 30% 5% / 0.4),
+      0 4px 24px hsl(220 30% 5% / 0.5),
+      0 0 40px hsl(var(--gauge-glow) / 0.03);
+  }
+
+  /* Ambient dashboard backlight glow */
+  .instrument-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      hsl(var(--gauge-glow) / 0.04) 0%,
+      transparent 60%
+    );
+  }
+
+  .dark .instrument-panel::before {
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      hsl(var(--gauge-glow) / 0.06) 0%,
+      transparent 60%
+    );
+  }
+
+  /* Digital LCD readout */
+  .readout {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.05em;
+    color: hsl(var(--foreground));
+  }
+
+  .dark .readout {
+    text-shadow: 0 0 8px hsl(var(--gauge-glow) / 0.35);
+  }
+
+  /* Gauge ring — circular bezel */
+  .gauge-ring {
+    border-radius: 9999px;
+    background: conic-gradient(
+      from 220deg,
+      hsl(var(--border)) 0%,
+      hsl(0 0% 100% / 0.1) 25%,
+      hsl(var(--border)) 50%,
+      hsl(0 0% 0% / 0.1) 75%,
+      hsl(var(--border)) 100%
+    );
+    padding: 3px;
+  }
+
+  .gauge-ring > * {
+    border-radius: 9999px;
+    background: hsl(var(--card));
+  }
+
+  /* Dial tick marks */
+  .dial-tick {
+    width: 2px;
+    height: 8px;
+    background: hsl(var(--muted-foreground) / 0.4);
+    border-radius: 1px;
+  }
+
+  .dial-tick.active {
+    background: hsl(var(--success));
+    box-shadow: 0 0 6px hsl(var(--success) / 0.5);
+  }
+
+  /* Existing glows — updated for instrument feel */
   .input-glow:focus {
     box-shadow: 0 0 0 3px hsl(217 91% 60% / 0.15);
   }
@@ -145,6 +252,7 @@
   body {
     background: white !important;
     color: black !important;
+    background-image: none !important;
   }
   .no-print {
     display: none !important;
