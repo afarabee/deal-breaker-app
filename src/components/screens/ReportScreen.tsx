@@ -243,10 +243,10 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.3 }}
-              className={`rounded-xl border p-3 text-center ${lever.color}`}
+              className={`rounded-xl border p-3 text-center instrument-panel ${lever.color}`}
             >
-              <p className="text-xs font-semibold mb-1">{lever.label}</p>
-              <p className="text-sm font-medium text-muted-foreground">{lever.value}</p>
+              <p className="text-xs font-instrument font-semibold mb-1">{lever.label}</p>
+              <p className="text-sm font-instrument text-muted-foreground readout">{lever.value}</p>
             </motion.div>
           );
         })}
