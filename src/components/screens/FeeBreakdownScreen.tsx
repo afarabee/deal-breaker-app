@@ -142,7 +142,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-5 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-5 instrument-panel p-5"
       >
         <div className="text-center space-y-1">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">
