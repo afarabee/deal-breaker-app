@@ -404,7 +404,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-4 instrument-panel p-5"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-heading text-foreground">Quick Entry</h2>
