@@ -3,6 +3,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 interface SpeechRecognitionResult {
   isListening: boolean;
   transcript: string;
+  isFinal: boolean;
   startListening: () => void;
   stopListening: () => void;
   isSupported: boolean;
@@ -16,6 +17,7 @@ const SpeechRecognitionAPI =
 export const useSpeechRecognition = (): SpeechRecognitionResult => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [isFinal, setIsFinal] = useState(false);
   const recognitionRef = useRef<any>(null);
 
   const isSupported = !!SpeechRecognitionAPI;
@@ -39,6 +41,7 @@ export const useSpeechRecognition = (): SpeechRecognitionResult => {
     recognition.onresult = (event: any) => {
       const result = event.results[event.results.length - 1];
       setTranscript(result[0].transcript);
+      setIsFinal(result.isFinal);
     };
 
     recognition.onerror = (event: any) => {
@@ -50,6 +53,7 @@ export const useSpeechRecognition = (): SpeechRecognitionResult => {
 
     recognitionRef.current = recognition;
     setTranscript("");
+    setIsFinal(false);
     recognition.start();
   }, []);
 
@@ -68,5 +72,5 @@ export const useSpeechRecognition = (): SpeechRecognitionResult => {
     };
   }, []);
 
-  return { isListening, transcript, startListening, stopListening, isSupported };
+  return { isListening, transcript, isFinal, startListening, stopListening, isSupported };
 };

@@ -32,6 +32,15 @@ export function parseSpokenNumber(text: string, isPercentage = false): string {
   // If it's already a plain number, return it
   const plainNum = cleaned.replace(/[,$%\s]/g, "");
   if (/^\d+\.?\d*$/.test(plainNum)) {
+    // For percentages, if the number has no decimal and is out of range,
+    // try inserting a decimal after the first digit (e.g. "69" → "6.9")
+    if (isPercentage && /^\d{2,}$/.test(plainNum)) {
+      const withDecimal = plainNum[0] + "." + plainNum.slice(1);
+      const asNum = parseFloat(withDecimal);
+      if (asNum >= 0 && asNum <= 30) {
+        return withDecimal;
+      }
+    }
     return plainNum;
   }
 

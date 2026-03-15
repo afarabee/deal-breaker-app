@@ -58,7 +58,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
   const [parsedValue, setParsedValue] = useState<string>("");
   const [inlineListeningField, setInlineListeningField] = useState<string | null>(null);
 
-  const { isListening, transcript, startListening, stopListening, isSupported } = useSpeechRecognition();
+  const { isListening, transcript, isFinal, startListening, stopListening, isSupported } = useSpeechRecognition();
 
   const update = (field: keyof DealNumbers, value: string) => {
     onChange({ ...data, [field]: value });
@@ -79,14 +79,14 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       const field = RAPID_FIELDS[activeFieldIndex];
       const parsed = parseSpokenNumber(transcript, field.isPercentage);
       setParsedValue(parsed);
-    } else if (inlineListeningField) {
+    } else if (inlineListeningField && isFinal) {
       const field = RAPID_FIELDS.find((f) => f.key === inlineListeningField);
       const parsed = parseSpokenNumber(transcript, field?.isPercentage);
       if (parsed) {
         update(inlineListeningField as keyof DealNumbers, parsed);
       }
     }
-  }, [transcript]);
+  }, [transcript, isFinal]);
 
   // Auto-apply inline mic result when listening stops
   useEffect(() => {

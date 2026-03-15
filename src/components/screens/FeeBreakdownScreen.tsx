@@ -47,7 +47,7 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
   const [parsedValue, setParsedValue] = useState<string>("");
   const [inlineListeningField, setInlineListeningField] = useState<string | null>(null);
 
-  const { isListening, transcript, startListening, stopListening, isSupported } = useSpeechRecognition();
+  const { isListening, transcript, isFinal, startListening, stopListening, isSupported } = useSpeechRecognition();
 
   const update = (field: keyof Omit<FeeBreakdown, "customFees">, value: string) => {
     onChange({ ...data, [field]: value });
@@ -67,13 +67,13 @@ const FeeBreakdownScreen = ({ data, onChange, onSubmit, onBack, onStartOver }: P
     if (voiceMode && activeFieldIndex !== null) {
       const parsed = parseSpokenNumber(transcript);
       setParsedValue(parsed);
-    } else if (inlineListeningField) {
+    } else if (inlineListeningField && isFinal) {
       const parsed = parseSpokenNumber(transcript);
       if (parsed) {
         update(inlineListeningField as keyof Omit<FeeBreakdown, "customFees">, parsed);
       }
     }
-  }, [transcript]);
+  }, [transcript, isFinal]);
 
   // Clear inline field when listening stops
   useEffect(() => {

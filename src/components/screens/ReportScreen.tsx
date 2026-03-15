@@ -197,6 +197,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
         <div className="flex gap-3 pt-2">
           {onRetry && <Button variant="success" onClick={onRetry}>Try Again</Button>}
           <Button variant="outline" onClick={onEditDeal}>Edit Deal</Button>
+          <Button variant="outline" onClick={onStartOver} className="text-destructive border-destructive/30 hover:bg-destructive/10">Start Over</Button>
         </div>
       </motion.div>
     );
