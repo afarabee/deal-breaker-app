@@ -24,7 +24,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
-const emptyVehicle: VehicleInfo = { condition: "New", year: String(new Date().getFullYear()), make: "", model: "", trim: "", state: "", dealershipName: "" };
+const emptyVehicle: VehicleInfo = { condition: "New", year: String(new Date().getFullYear()), make: "", model: "", trim: "", state: "" };
 const emptyNumbers: DealNumbers = { sellingPrice: "", tradeInValue: "", tradePayoff: "", downPayment: "", interestRate: "", loanTerm: "", monthlyPayment: "", creditScore: "" };
 const emptyFees: FeeBreakdown = { docFee: "", salesTax: "", registration: "", antiTheft: "", extendedWarranty: "", gapCoverage: "", maintenanceContract: "", customFees: [] };
 

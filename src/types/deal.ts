@@ -5,7 +5,6 @@ export interface VehicleInfo {
   model: string;
   trim: string;
   state: string;
-  dealershipName: string;
 }
 
 export interface DealNumbers {
