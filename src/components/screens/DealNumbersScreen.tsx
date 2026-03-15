@@ -9,6 +9,7 @@ import CurrencyInput from "@/components/CurrencyInput";
 import NumericKeypad from "@/components/NumericKeypad";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { parseSpokenNumber } from "@/lib/numberParser";
+import { playConfirmSound } from "@/lib/audioFeedback";
 import {
   Dialog,
   DialogTrigger,
@@ -233,6 +234,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
               variant="success"
               className="flex-1"
               onClick={() => {
+                playConfirmSound();
                 update(field.key, parsedValue);
                 setParsedValue("");
                 if (activeFieldIndex < RAPID_FIELDS.length - 1) {
