@@ -234,6 +234,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
               variant="success"
               className="flex-1"
               onClick={() => {
+                playConfirmSound();
                 update(field.key, parsedValue);
                 setParsedValue("");
                 if (activeFieldIndex < RAPID_FIELDS.length - 1) {
