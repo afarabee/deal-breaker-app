@@ -1,58 +1,44 @@
 
 
-# DealBreaker — AI-Powered Car Deal Auditor
+## Plan: Add Voice Entry Mode to Deal Numbers Screen
 
-## Overview
-A 4-screen stateless web app where users enter car deal details and receive an AI-powered forensic report scoring every line item, providing negotiation scripts, and calculating potential savings. Dark fintech aesthetic with aggressive, confident branding.
+### New Files
 
-## Design System
-- **Dark theme**: Near-black background (#0D0D0D), dark cards (#1A1A1A), subtle borders (#2A2A2A)
-- **Brand red accent** (#E63946) for CTAs, warnings, and the BREAKER logo
-- **Traffic light system**: Red (#E63946) for push back, Amber (#D4A017) for review, Green (#2D8B4E) for fair
-- **Typography**: Archivo Black for headings/logo, DM Sans for body text
-- **Animations**: Framer Motion for screen transitions, staggered card reveals, count-up score animation, input focus glows, and progress bar transitions
-- **Mobile-first layout**: Max-width 420px centered on desktop, full-width on mobile
+**1. `src/hooks/useSpeechRecognition.ts`** — Custom hook wrapping the Web Speech API
+- Manages `SpeechRecognition` instance lifecycle (start/stop/abort)
+- Returns `{ isListening, transcript, startListening, stopListening, isSupported }`
+- Resets transcript on each new listen session
+- Handles browser compatibility (webkit prefix)
 
-## Screen 1: Vehicle Info
-- Logo header with animated 4-segment progress bar (segment 1 active)
-- Section title "Your Vehicle" with subtitle
-- Form fields: New/Used dropdown + Year input (side by side), Make dropdown + Model dropdown (filtered by make, side by side), Trim dropdown/input, Dealership State dropdown, optional Dealership Name text input
-- Pre-populated dropdowns for all major US makes with model filtering
-- "Analyze My Deal →" button disabled until Condition + Make + Model are filled
+**2. `src/lib/numberParser.ts`** — Converts spoken number words to digits
+- Handles word-to-number mapping: "one" through "nineteen", tens ("twenty", "thirty"…), magnitudes ("hundred", "thousand", "million")
+- Composites: "twenty-five thousand" → 25000, "five point nine" → 5.9
+- Strips non-numeric words like "dollars", "percent"
+- Falls back to raw digits if already numeric in transcript
 
-## Screen 2: Deal Numbers
-- Progress bar advances to segment 2
-- Fields: Selling Price ($), Trade-In Value + Trade Payoff (side by side, $), Down Payment ($), Interest Rate (% suffix) + Loan Term dropdown (side by side)
-- Red warning callout box after rate/term: "Never negotiate on monthly payment..."
-- Navigation: ← Back + Start Over (left), Next: Fees → (right)
+### Modified Files
 
-## Screen 3: Fee Breakdown
-- Progress bar advances to segment 3
-- Two grouped cards:
-  - **Standard Fees**: Doc/Admin Fee, Sales Tax, Registration/Title/License
-  - **Dealer Add-Ons & F&I Products**: Anti-Theft/Etch, Extended Warranty, GAP Coverage, Maintenance Contract, dynamic custom fee rows with "+ Add Another Fee" button
-- Navigation: ← Back + Start Over (left), "Break This Deal 🔥" (right)
+**3. `src/components/screens/DealNumbersScreen.tsx`**
+- Add a **"Voice Entry"** mode button alongside the existing "Quick Entry" toggle
+- Voice Entry mode: sequential field flow (like Quick Entry) but with a microphone UI instead of keypad
+  - Shows current field label, a large mic button (pulsing animation while listening), and the parsed result
+  - Displays raw transcript underneath so user sees what was heard
+  - "Confirm & Next" / "Re-listen" / "Type Instead" actions
+  - Previous/Next field navigation, field counter
+  - "Back to form" link
+- In Standard Entry mode: add a small `Mic` icon button next to each `CurrencyInput` and the interest rate field for inline voice capture per field
 
-## Screen 4: DealBreaker Report
-- Loading state with pulsing animation and "Analyzing your deal..." text
-- **Deal Score**: Large animated letter grade with color coding, issue/review count subtitle
-- **Three-Lever Summary**: Price, Trade (equity calculation), Rate — each in a card with color-coded status
-- **Line-by-Line Audit**: Stagger-animated cards with colored left borders, traffic light badges, AI explanations
-- **Negotiation Scripts**: Red-tinted cards with italic copy-paste scripts (only for RED items)
-- **Potential Savings**: Green gradient card with large bold savings amount
-- Navigation: ← Edit Deal + Start Over (left), Share Report 📤 (right)
+**4. `src/components/CurrencyInput.tsx`**
+- Add optional `onMicClick` prop
+- When provided, render a `Mic` icon button to the right of the input (replacing or alongside the Pencil icon)
 
-## Backend: Supabase Edge Function
-- `analyze-deal` edge function that receives deal data as JSON
-- Calls Claude API (claude-sonnet-4-20250514) with a forensic auditor system prompt
-- Returns structured JSON: deal score, line item evaluations with status/explanation, negotiation scripts, potential savings, and lever analysis
-- ANTHROPIC_API_KEY stored as a Supabase secret
-- Proper CORS headers and error handling
+### UX Details
+- Mic button pulses with a red ring animation while actively listening
+- After speech ends, show: "I heard: [transcript]" → "Parsed: $25,000" with confirm/retry
+- If `SpeechRecognition` is not supported, hide voice buttons and show no voice mode option
+- No external API keys needed — pure browser API
 
-## Key Interactions
-- Smooth animated transitions between all 4 screens (slide/fade via Framer Motion)
-- "Start Over" button on screens 2-4 resets all state and returns to screen 1
-- Share Report button on screen 4 (copy/share functionality)
-- All form state managed client-side (stateless, no database)
-- No authentication, no data persistence
+### Technical Notes
+- `webkitSpeechRecognition` is well-supported on Chrome/Edge; Safari has partial support. We'll feature-detect and gracefully hide on unsupported browsers.
+- The `numberParser` handles edge cases: "five nine" for APR → "5.9" (percentage context), "ninety seven thousand seventy four" → 97074
 
