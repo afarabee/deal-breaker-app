@@ -254,7 +254,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
 
       {/* Line-by-Line Audit */}
       <div className="space-y-3">
-        <h3 className="text-sm font-heading text-foreground uppercase tracking-wider">Line-by-Line Audit</h3>
+        <h3 className="text-sm font-instrument text-foreground uppercase tracking-wider">Line-by-Line Audit</h3>
         {report.lineItems.map((item, i) => {
           const c = statusColor(item.status);
           return (
