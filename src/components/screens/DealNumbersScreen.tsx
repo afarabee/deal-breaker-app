@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DealNumbers } from "@/types/deal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LOAN_TERMS } from "@/data/vehicleData";
-import { Pencil, Info } from "lucide-react";
+import { Pencil, Info, Mic, MicOff, Check, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import CurrencyInput from "@/components/CurrencyInput";
 import NumericKeypad from "@/components/NumericKeypad";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { parseSpokenNumber } from "@/lib/numberParser";
 import {
   Dialog,
   DialogTrigger,
@@ -50,11 +52,15 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [warnings, setWarnings] = useState<Record<string, string>>({});
   const [rapidMode, setRapidMode] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
+  const [parsedValue, setParsedValue] = useState<string>("");
+  const [inlineListeningField, setInlineListeningField] = useState<string | null>(null);
+
+  const { isListening, transcript, startListening, stopListening, isSupported } = useSpeechRecognition();
 
   const update = (field: keyof DealNumbers, value: string) => {
     onChange({ ...data, [field]: value });
-    // Clear error on change
     if (errors[field]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -62,6 +68,39 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         return next;
       });
     }
+  };
+
+  // Parse transcript when it changes in voice mode
+  useEffect(() => {
+    if (!transcript) return;
+
+    if (voiceMode && activeFieldIndex !== null) {
+      const field = RAPID_FIELDS[activeFieldIndex];
+      const parsed = parseSpokenNumber(transcript, field.isPercentage);
+      setParsedValue(parsed);
+    } else if (inlineListeningField) {
+      const field = RAPID_FIELDS.find((f) => f.key === inlineListeningField);
+      const parsed = parseSpokenNumber(transcript, field?.isPercentage);
+      if (parsed) {
+        update(inlineListeningField as keyof DealNumbers, parsed);
+      }
+    }
+  }, [transcript]);
+
+  // Auto-apply inline mic result when listening stops
+  useEffect(() => {
+    if (!isListening && inlineListeningField) {
+      setInlineListeningField(null);
+    }
+  }, [isListening]);
+
+  const handleInlineMic = (fieldKey: string) => {
+    if (isListening && inlineListeningField === fieldKey) {
+      stopListening();
+      return;
+    }
+    setInlineListeningField(fieldKey);
+    startListening();
   };
 
   const validate = (): boolean => {
@@ -88,7 +127,6 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       newErrors.monthlyPayment = "Enter a valid amount";
     }
 
-    // Soft warning: monthly payment sanity check
     const newWarnings: Record<string, string> = {};
     if (data.monthlyPayment && data.sellingPrice && data.loanTerm) {
       const mp = parseFloat(data.monthlyPayment);
@@ -108,7 +146,6 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       }
     }
     setWarnings(newWarnings);
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -117,7 +154,199 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
     if (validate()) onNext();
   };
 
-  // Rapid entry mode
+  // ─── VOICE ENTRY MODE ───
+  if (voiceMode && activeFieldIndex !== null) {
+    const field = RAPID_FIELDS[activeFieldIndex];
+    const hasResult = !isListening && parsedValue;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="space-y-5 card-glow rounded-xl p-5 bg-card border border-border"
+      >
+        <div className="text-center space-y-1">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            Field {activeFieldIndex + 1} of {RAPID_FIELDS.length}
+          </p>
+          <h3 className="text-lg font-heading text-foreground">{field.label}</h3>
+        </div>
+
+        {/* Mic button */}
+        <div className="flex flex-col items-center gap-4 py-4">
+          <button
+            onClick={() => {
+              if (isListening) {
+                stopListening();
+              } else {
+                setParsedValue("");
+                startListening();
+              }
+            }}
+            className={`relative w-20 h-20 rounded-full flex items-center justify-center transition-all ${
+              isListening
+                ? "bg-destructive text-destructive-foreground"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
+            }`}
+          >
+            {isListening && (
+              <span className="absolute inset-0 rounded-full border-2 border-destructive animate-ping opacity-40" />
+            )}
+            {isListening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+          </button>
+          <p className="text-sm text-muted-foreground">
+            {isListening ? "Listening… speak the number" : "Tap the mic and say the number"}
+          </p>
+        </div>
+
+        {/* Transcript & parsed result */}
+        {transcript && (
+          <div className="rounded-lg bg-secondary/50 border border-border p-3 space-y-2 text-center">
+            <p className="text-xs text-muted-foreground">I heard:</p>
+            <p className="text-sm text-foreground italic">"{transcript}"</p>
+            {parsedValue && (
+              <>
+                <p className="text-xs text-muted-foreground mt-2">Parsed as:</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {field.isPercentage ? parsedValue + "%" : "$" + Number(parsedValue).toLocaleString()}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Actions */}
+        {hasResult && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setParsedValue("");
+                startListening();
+              }}
+            >
+              <RotateCcw className="h-4 w-4 mr-1" /> Re-listen
+            </Button>
+            <Button
+              variant="success"
+              className="flex-1"
+              onClick={() => {
+                update(field.key, parsedValue);
+                setParsedValue("");
+                if (activeFieldIndex < RAPID_FIELDS.length - 1) {
+                  setActiveFieldIndex(activeFieldIndex + 1);
+                } else {
+                  setActiveFieldIndex(null);
+                }
+              }}
+            >
+              <Check className="h-4 w-4 mr-1" />
+              {activeFieldIndex < RAPID_FIELDS.length - 1 ? "Confirm & Next" : "Confirm & Done"}
+            </Button>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between pt-1">
+          <button
+            onClick={() => {
+              stopListening();
+              setParsedValue("");
+              if (activeFieldIndex > 0) {
+                setActiveFieldIndex(activeFieldIndex - 1);
+              } else {
+                setActiveFieldIndex(null);
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={() => {
+              stopListening();
+              setParsedValue("");
+              if (activeFieldIndex < RAPID_FIELDS.length - 1) {
+                setActiveFieldIndex(activeFieldIndex + 1);
+              } else {
+                setActiveFieldIndex(null);
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Skip →
+          </button>
+        </div>
+        <button
+          onClick={() => { stopListening(); setVoiceMode(false); setActiveFieldIndex(null); setParsedValue(""); }}
+          className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors text-center pt-1"
+        >
+          ← Back to form
+        </button>
+      </motion.div>
+    );
+  }
+
+  // Voice mode field list (no active field selected)
+  if (voiceMode) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-heading text-foreground flex items-center gap-2">
+            <Mic className="h-5 w-5 text-primary" /> Voice Entry
+          </h2>
+          <button
+            onClick={() => setVoiceMode(false)}
+            className="text-xs px-3 py-1.5 rounded-full border border-primary bg-primary text-primary-foreground font-semibold"
+          >
+            Standard Entry
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground">Tap a field to speak its value.</p>
+        <div className="space-y-2">
+          {RAPID_FIELDS.map((field, i) => (
+            <button
+              key={field.key}
+              onClick={() => { setActiveFieldIndex(i); setParsedValue(""); }}
+              className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-secondary/50 hover:bg-secondary transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Mic className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-foreground">{field.label}</span>
+              </div>
+              <span className="text-sm font-semibold text-foreground">
+                {data[field.key]
+                  ? field.isPercentage
+                    ? data[field.key] + "%"
+                    : "$" + Number(data[field.key]).toLocaleString()
+                  : "—"}
+              </span>
+            </button>
+          ))}
+        </div>
+        <Button
+          variant="success"
+          className="w-full"
+          onClick={() => { setParsedValue(""); setActiveFieldIndex(0); }}
+        >
+          <Mic className="h-4 w-4 mr-1" /> Start Voice Entry
+        </Button>
+        <div className="flex items-center justify-between pt-2">
+          <Button variant="outline" onClick={onBack}>← Back</Button>
+          <Button onClick={handleNext} variant="success">Next: Fees →</Button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // ─── RAPID (KEYPAD) ENTRY MODE ───
   if (rapidMode && activeFieldIndex !== null) {
     const field = RAPID_FIELDS[activeFieldIndex];
     return (
@@ -212,6 +441,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
     );
   }
 
+  // ─── STANDARD ENTRY MODE ───
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -247,34 +477,70 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
             </DialogContent>
           </Dialog>
         </div>
-        <button
-          onClick={() => setRapidMode(true)}
-          className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 font-semibold transition-colors"
-        >
-          Quick Entry
-        </button>
+        <div className="flex items-center gap-1.5">
+          {isSupported && (
+            <button
+              onClick={() => { setVoiceMode(true); setRapidMode(false); }}
+              className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 font-semibold transition-colors flex items-center gap-1"
+            >
+              <Mic className="h-3 w-3" /> Voice
+            </button>
+          )}
+          <button
+            onClick={() => { setRapidMode(true); setVoiceMode(false); }}
+            className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 font-semibold transition-colors"
+          >
+            Quick Entry
+          </button>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground">Enter the key numbers from your dealer worksheet. Focus on the big levers.</p>
 
       <div className="space-y-1.5">
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Selling Price (after discounts)</label>
-        <CurrencyInput value={data.sellingPrice} onChange={(v) => update("sellingPrice", v)} placeholder="97074" error={errors.sellingPrice} />
+        <CurrencyInput
+          value={data.sellingPrice}
+          onChange={(v) => update("sellingPrice", v)}
+          placeholder="97074"
+          error={errors.sellingPrice}
+          onMicClick={isSupported ? () => handleInlineMic("sellingPrice") : undefined}
+          isListening={isListening && inlineListeningField === "sellingPrice"}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trade-In Value</label>
-          <CurrencyInput value={data.tradeInValue} onChange={(v) => update("tradeInValue", v)} placeholder="25000" />
+          <CurrencyInput
+            value={data.tradeInValue}
+            onChange={(v) => update("tradeInValue", v)}
+            placeholder="25000"
+            onMicClick={isSupported ? () => handleInlineMic("tradeInValue") : undefined}
+            isListening={isListening && inlineListeningField === "tradeInValue"}
+          />
         </div>
         <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trade Payoff</label>
-          <CurrencyInput value={data.tradePayoff} onChange={(v) => update("tradePayoff", v)} placeholder="28526" />
+          <CurrencyInput
+            value={data.tradePayoff}
+            onChange={(v) => update("tradePayoff", v)}
+            placeholder="28526"
+            onMicClick={isSupported ? () => handleInlineMic("tradePayoff") : undefined}
+            isListening={isListening && inlineListeningField === "tradePayoff"}
+          />
         </div>
       </div>
 
       <div className="space-y-1.5">
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Down Payment</label>
-        <CurrencyInput value={data.downPayment} onChange={(v) => update("downPayment", v)} placeholder="12500" error={errors.downPayment} />
+        <CurrencyInput
+          value={data.downPayment}
+          onChange={(v) => update("downPayment", v)}
+          placeholder="12500"
+          error={errors.downPayment}
+          onMicClick={isSupported ? () => handleInlineMic("downPayment") : undefined}
+          isListening={isListening && inlineListeningField === "downPayment"}
+        />
       </div>
 
       <div className="rounded-xl overflow-hidden">
@@ -296,8 +562,21 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
                 value={data.interestRate}
                 onChange={(e) => update("interestRate", e.target.value.replace(/[^0-9.]/g, ""))}
                 placeholder="5.9"
-                className={`pr-9 bg-input border-input-border input-glow focus:border-primary ${errors.interestRate ? "border-destructive" : ""}`}
+                className={`pr-14 bg-input border-input-border input-glow focus:border-primary ${errors.interestRate ? "border-destructive" : ""}`}
               />
+              {isSupported && (
+                <button
+                  type="button"
+                  onClick={() => handleInlineMic("interestRate")}
+                  className={`absolute right-8 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-colors ${
+                    isListening && inlineListeningField === "interestRate"
+                      ? "text-destructive animate-pulse"
+                      : "text-muted-foreground/50 hover:text-primary"
+                  }`}
+                >
+                  <Mic className="h-3.5 w-3.5" />
+                </button>
+              )}
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
             </div>
             {errors.interestRate && <p className="text-xs text-destructive mt-1">{errors.interestRate}</p>}
@@ -342,7 +621,14 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
           </p>
           <div className="space-y-1.5">
             <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Monthly Payment (if quoted)</label>
-            <CurrencyInput value={data.monthlyPayment} onChange={(v) => update("monthlyPayment", v)} placeholder="Optional" error={errors.monthlyPayment} />
+            <CurrencyInput
+              value={data.monthlyPayment}
+              onChange={(v) => update("monthlyPayment", v)}
+              placeholder="Optional"
+              error={errors.monthlyPayment}
+              onMicClick={isSupported ? () => handleInlineMic("monthlyPayment") : undefined}
+              isListening={isListening && inlineListeningField === "monthlyPayment"}
+            />
             <p className="text-xs text-warning-foreground">
               We include this only to check their math. If the quoted payment doesn't match the numbers, we'll flag it.
             </p>
