@@ -268,7 +268,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-semibold text-foreground">{item.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">${item.amount.toLocaleString()}</span>
+                  <span className="text-sm readout text-muted-foreground">${item.amount.toLocaleString()}</span>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold cursor-help ${c.pill}`}>{c.label}</span>
