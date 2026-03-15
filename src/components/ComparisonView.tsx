@@ -86,21 +86,24 @@ const ComparisonView = ({ dealA, dealB, onClose, onViewDealA, onStartOver, onEdi
       <div className="space-y-2">
         <h3 className="text-sm font-heading text-foreground uppercase tracking-wider">Key Levers</h3>
         {(["price", "trade", "rate"] as const).map((lever) => (
-          <div key={lever} className="grid grid-cols-2 gap-3">
+          <div key={lever} className="p-3 rounded-lg border border-border bg-card space-y-2">
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold text-foreground capitalize">{lever}</p>
+              {lever === "trade" && "equity" in dealA.report.leverAnalysis.trade && (
+                <span className="text-xs text-muted-foreground ml-auto">
+                  {dealA.report.leverAnalysis.trade.isNegative ? "-" : ""}${Math.abs(dealA.report.leverAnalysis.trade.equity).toLocaleString()}
+                </span>
+              )}
+            </div>
             {[dealA, dealB].map((deal, i) => {
               const analysis = deal.report.leverAnalysis[lever];
               return (
-                <div key={i} className="p-3 rounded-lg border border-border bg-card">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${analysis.status === "red" ? "bg-destructive" : analysis.status === "yellow" ? "bg-warning" : "bg-success"}`} />
-                    <p className="text-xs font-semibold text-foreground capitalize">{lever}</p>
-                    {lever === "trade" && "equity" in analysis && (
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {analysis.isNegative ? "-" : ""}${Math.abs(analysis.equity).toLocaleString()}
-                      </span>
-                    )}
+                <div key={i} className="flex items-start gap-2">
+                  <span className={`inline-block w-2.5 h-2.5 rounded-full mt-0.5 shrink-0 ${analysis.status === "red" ? "bg-destructive" : analysis.status === "yellow" ? "bg-warning" : "bg-success"}`} />
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">Deal {i === 0 ? "A" : "B"}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{analysis.assessment}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{analysis.assessment}</p>
                 </div>
               );
             })}

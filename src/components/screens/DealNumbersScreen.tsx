@@ -45,7 +45,6 @@ const RAPID_FIELDS: FieldConfig[] = [
   { key: "tradeInValue", label: "Trade-In Value", placeholder: "25000" },
   { key: "tradePayoff", label: "Trade Payoff", placeholder: "28526" },
   { key: "downPayment", label: "Down Payment", placeholder: "12500" },
-  { key: "interestRate", label: "Interest Rate (APR)", placeholder: "5.9", isPercentage: true },
   { key: "monthlyPayment", label: "Monthly Payment (if quoted)", placeholder: "0" },
 ];
 
@@ -564,21 +563,8 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
                 value={data.interestRate}
                 onChange={(e) => update("interestRate", e.target.value.replace(/[^0-9.]/g, ""))}
                 placeholder="5.9"
-                className={`pr-14 bg-input border-input-border input-glow focus:border-primary ${errors.interestRate ? "border-destructive" : ""}`}
+                className={`pr-9 bg-input border-input-border input-glow focus:border-primary ${errors.interestRate ? "border-destructive" : ""}`}
               />
-              {isSupported && (
-                <button
-                  type="button"
-                  onClick={() => handleInlineMic("interestRate")}
-                  className={`absolute right-8 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-colors ${
-                    isListening && inlineListeningField === "interestRate"
-                      ? "text-destructive animate-pulse"
-                      : "text-muted-foreground/50 hover:text-primary"
-                  }`}
-                >
-                  <Mic className="h-3.5 w-3.5" />
-                </button>
-              )}
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
             </div>
             {errors.interestRate && <p className="text-xs text-destructive mt-1">{errors.interestRate}</p>}

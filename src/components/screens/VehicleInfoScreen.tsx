@@ -74,7 +74,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
     onNext();
   };
 
-  const canProceed = data.condition && data.make && data.model;
+  const canProceed = data.condition && data.make && data.model && data.state;
 
   return (
     <motion.div
