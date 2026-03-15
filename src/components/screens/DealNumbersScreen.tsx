@@ -164,7 +164,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-5 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-5 instrument-panel p-5"
       >
         <div className="text-center space-y-1">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">
@@ -297,7 +297,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-4 instrument-panel p-5"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-heading text-foreground flex items-center gap-2">
@@ -355,7 +355,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-4 instrument-panel p-5"
       >
         <NumericKeypad
           value={data[field.key]}
@@ -404,7 +404,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-4 card-glow rounded-xl p-5 bg-card border border-border"
+        className="space-y-4 instrument-panel p-5"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-heading text-foreground">Quick Entry</h2>
@@ -449,7 +449,7 @@ const DealNumbersScreen = ({ data, onChange, onNext, onBack, onStartOver }: Prop
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 card-glow rounded-xl p-5 bg-card border border-border"
+      className="space-y-6 instrument-panel p-5"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

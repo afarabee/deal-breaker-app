@@ -4,6 +4,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Printer, GitCompareArrows, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import SpeedometerGauge from "@/components/SpeedometerGauge";
 
 interface Props {
   report: DealReport | null;
@@ -54,23 +55,7 @@ const gradeBg = (grade: string) => {
 };
 
 const AnimatedScore = ({ grade }: { grade: string }) => {
-  const [show, setShow] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setShow(true), 300);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <motion.div
-      initial={{ scale: 0.3, opacity: 0 }}
-      animate={show ? { scale: 1, opacity: 1 } : {}}
-      transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      className="flex items-center justify-center gap-3"
-    >
-      <span className={`text-7xl font-heading ${gradeColor(grade)}`}>{grade}</span>
-      <span className="text-5xl">{gradeEmoji(grade)}</span>
-    </motion.div>
-  );
+  return <SpeedometerGauge grade={grade} />;
 };
 
 const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, onEditDeal, onStartOver, onCompare }: Props) => {
@@ -236,9 +221,8 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
-      {/* Deal Score */}
-      <div className={`text-center py-8 rounded-2xl ${gradeBg(report.dealScore)}`}>
-        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Audit Results</p>
+      <div className={`text-center py-6 rounded-2xl instrument-panel p-6 ${gradeBg(report.dealScore)}`}>
+        <p className="text-xs uppercase tracking-wider text-muted-foreground font-instrument mb-2">Audit Results</p>
         <AnimatedScore grade={report.dealScore} />
         <p className="text-sm text-muted-foreground mt-3">
           {redCount > 0 && <span className="text-destructive font-medium">{redCount} issue{redCount > 1 ? "s" : ""} to push back on</span>}
@@ -259,10 +243,10 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.3 }}
-              className={`rounded-xl border p-3 text-center ${lever.color}`}
+              className={`rounded-xl border p-3 text-center instrument-panel ${lever.color}`}
             >
-              <p className="text-xs font-semibold mb-1">{lever.label}</p>
-              <p className="text-sm font-medium text-muted-foreground">{lever.value}</p>
+              <p className="text-xs font-instrument font-semibold mb-1">{lever.label}</p>
+              <p className="text-sm font-instrument text-muted-foreground readout">{lever.value}</p>
             </motion.div>
           );
         })}
@@ -270,7 +254,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
 
       {/* Line-by-Line Audit */}
       <div className="space-y-3">
-        <h3 className="text-sm font-heading text-foreground uppercase tracking-wider">Line-by-Line Audit</h3>
+        <h3 className="text-sm font-instrument text-foreground uppercase tracking-wider">Line-by-Line Audit</h3>
         {report.lineItems.map((item, i) => {
           const c = statusColor(item.status);
           return (
@@ -279,12 +263,12 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }}
-              className={`rounded-xl border border-border bg-card p-4 border-l-[3px] ${c.border}`}
+              className={`rounded-xl border border-border instrument-panel p-4 border-l-[3px] ${c.border}`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-semibold text-foreground">{item.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">${item.amount.toLocaleString()}</span>
+                  <span className="text-sm readout text-muted-foreground">${item.amount.toLocaleString()}</span>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold cursor-help ${c.pill}`}>{c.label}</span>
@@ -371,7 +355,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
           className="rounded-2xl bg-success p-6 text-center"
         >
           <p className="text-sm text-success-foreground/80 uppercase tracking-wider mb-1">Potential Savings</p>
-          <p className="text-4xl font-heading text-success-foreground">${report.potentialSavings.toLocaleString()}</p>
+          <p className="text-4xl font-instrument text-success-foreground readout">${report.potentialSavings.toLocaleString()}</p>
           <p className="text-sm text-success-foreground/70 mt-1">If all flagged items are successfully negotiated</p>
         </motion.div>
       )}

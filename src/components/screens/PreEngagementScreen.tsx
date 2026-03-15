@@ -32,7 +32,7 @@ const PreEngagementScreen = ({ onReady, onBack }: Props) => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 card-glow rounded-xl p-5 bg-card border border-border"
+      className="space-y-6 instrument-panel p-5"
     >
       <div>
         <h2 className="text-xl font-heading text-foreground">Before You Sit Down</h2>

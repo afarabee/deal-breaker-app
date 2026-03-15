@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         heading: ["Archivo Black", "sans-serif"],
         body: ["DM Sans", "sans-serif"],
+        instrument: ["Orbitron", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

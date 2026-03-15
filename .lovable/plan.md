@@ -1,57 +1,58 @@
 
 
-## Plan: Dashboard / Instrument Cluster Car Theme
+# DealBreaker — AI-Powered Car Deal Auditor
 
-Transform the app's aesthetic to evoke a car dashboard — think digital gauges, instrument panel styling, and cockpit vibes — while keeping the existing layout and functionality intact.
+## Overview
+A 4-screen stateless web app where users enter car deal details and receive an AI-powered forensic report scoring every line item, providing negotiation scripts, and calculating potential savings. Dark fintech aesthetic with aggressive, confident branding.
 
-### Changes
+## Design System
+- **Dark theme**: Near-black background (#0D0D0D), dark cards (#1A1A1A), subtle borders (#2A2A2A)
+- **Brand red accent** (#E63946) for CTAs, warnings, and the BREAKER logo
+- **Traffic light system**: Red (#E63946) for push back, Amber (#D4A017) for review, Green (#2D8B4E) for fair
+- **Typography**: Archivo Black for headings/logo, DM Sans for body text
+- **Animations**: Framer Motion for screen transitions, staggered card reveals, count-up score animation, input focus glows, and progress bar transitions
+- **Mobile-first layout**: Max-width 420px centered on desktop, full-width on mobile
 
-**1. `index.html` — Add "Orbitron" font**
-Add Google Font `Orbitron` (a digital/futuristic monospace-ish font used in car instrument clusters) alongside the existing fonts.
+## Screen 1: Vehicle Info
+- Logo header with animated 4-segment progress bar (segment 1 active)
+- Section title "Your Vehicle" with subtitle
+- Form fields: New/Used dropdown + Year input (side by side), Make dropdown + Model dropdown (filtered by make, side by side), Trim dropdown/input, Dealership State dropdown, optional Dealership Name text input
+- Pre-populated dropdowns for all major US makes with model filtering
+- "Analyze My Deal →" button disabled until Condition + Make + Model are filled
 
-**2. `tailwind.config.ts` — Add `instrument` font family**
-Add `font-instrument: ['Orbitron', 'sans-serif']` to the font families for use on gauge-like elements (scores, numbers, labels).
+## Screen 2: Deal Numbers
+- Progress bar advances to segment 2
+- Fields: Selling Price ($), Trade-In Value + Trade Payoff (side by side, $), Down Payment ($), Interest Rate (% suffix) + Loan Term dropdown (side by side)
+- Red warning callout box after rate/term: "Never negotiate on monthly payment..."
+- Navigation: ← Back + Start Over (left), Next: Fees → (right)
 
-**3. `src/index.css` — Dashboard-themed styling**
-- Add subtle gauge/dial-inspired CSS patterns:
-  - `.gauge-ring` — circular gradient border mimicking a speedometer bezel
-  - `.instrument-panel` — dark recessed panel look with inner shadow, faint grid pattern
-  - `.readout` — digital LCD-style readout styling (Orbitron font, slight glow)
-  - `.dial-tick` — small tick mark styling for progress indicators
-- Update dark mode card variables slightly: deeper blacks, add a subtle blue-tinted ambient glow reminiscent of dashboard backlighting
-- Add a subtle carbon-fiber-like background texture using CSS repeating gradients on the body
+## Screen 3: Fee Breakdown
+- Progress bar advances to segment 3
+- Two grouped cards:
+  - **Standard Fees**: Doc/Admin Fee, Sales Tax, Registration/Title/License
+  - **Dealer Add-Ons & F&I Products**: Anti-Theft/Etch, Extended Warranty, GAP Coverage, Maintenance Contract, dynamic custom fee rows with "+ Add Another Fee" button
+- Navigation: ← Back + Start Over (left), "Break This Deal 🔥" (right)
 
-**4. `src/components/DealHeader.tsx` — Speedometer-style progress**
-Replace the 5-dot progress bar with a semi-circular gauge/arc indicator:
-- SVG arc with tick marks at each step
-- Animated needle or lit segment showing current step
-- Step labels below: "Vehicle → Briefing → Numbers → Fees → Report"
+## Screen 4: DealBreaker Report
+- Loading state with pulsing animation and "Analyzing your deal..." text
+- **Deal Score**: Large animated letter grade with color coding, issue/review count subtitle
+- **Three-Lever Summary**: Price, Trade (equity calculation), Rate — each in a card with color-coded status
+- **Line-by-Line Audit**: Stagger-animated cards with colored left borders, traffic light badges, AI explanations
+- **Negotiation Scripts**: Red-tinted cards with italic copy-paste scripts (only for RED items)
+- **Potential Savings**: Green gradient card with large bold savings amount
+- Navigation: ← Edit Deal + Start Over (left), Share Report 📤 (right)
 
-**5. `src/components/CurrencyInput.tsx` — Digital readout styling**
-- Apply `font-instrument` (Orbitron) to the input value display
-- Add a faint green/amber glow behind the text to mimic an LCD readout
-- Keep the `$` prefix and pencil icon but style them with the instrument aesthetic
+## Backend: Supabase Edge Function
+- `analyze-deal` edge function that receives deal data as JSON
+- Calls Claude API (claude-sonnet-4-20250514) with a forensic auditor system prompt
+- Returns structured JSON: deal score, line item evaluations with status/explanation, negotiation scripts, potential savings, and lever analysis
+- ANTHROPIC_API_KEY stored as a Supabase secret
+- Proper CORS headers and error handling
 
-**6. `src/components/screens/ReportScreen.tsx` — Gauge-style deal score**
-- Replace the plain letter grade with a speedometer/tachometer gauge visualization:
-  - SVG semi-circle with red→yellow→green gradient
-  - Animated needle pointing to the score position
-  - Grade letter displayed in the center with Orbitron font
-- Style the line-item audit cards with instrument panel borders (subtle inner shadows, recessed look)
-
-**7. `src/components/screens/VehicleInfoScreen.tsx`, `DealNumbersScreen.tsx`, `FeeBreakdownScreen.tsx` — Panel styling**
-- Wrap each screen's main card in the `instrument-panel` class
-- Apply `readout` class to numeric display values
-- Style section headers with small tick-mark decorations
-
-### What stays the same
-- All functionality, routing, voice entry, comparison view
-- Color system (success green, warning yellow, destructive red) — these map naturally to dashboard indicator lights
-- Logo and branding
-- Layout structure (max-420px mobile-first)
-
-### Technical notes
-- All changes are CSS/styling + minor component JSX updates
-- No new dependencies needed — gauge visualizations use inline SVG
-- Orbitron is a free Google Font, loaded the same way as existing fonts
+## Key Interactions
+- Smooth animated transitions between all 4 screens (slide/fade via Framer Motion)
+- "Start Over" button on screens 2-4 resets all state and returns to screen 1
+- Share Report button on screen 4 (copy/share functionality)
+- All form state managed client-side (stateless, no database)
+- No authentication, no data persistence
 
