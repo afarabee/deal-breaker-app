@@ -355,7 +355,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
           className="rounded-2xl bg-success p-6 text-center"
         >
           <p className="text-sm text-success-foreground/80 uppercase tracking-wider mb-1">Potential Savings</p>
-          <p className="text-4xl font-heading text-success-foreground">${report.potentialSavings.toLocaleString()}</p>
+          <p className="text-4xl font-instrument text-success-foreground readout">${report.potentialSavings.toLocaleString()}</p>
           <p className="text-sm text-success-foreground/70 mt-1">If all flagged items are successfully negotiated</p>
         </motion.div>
       )}
