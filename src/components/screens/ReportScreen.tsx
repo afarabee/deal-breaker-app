@@ -221,9 +221,8 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
-      {/* Deal Score */}
-      <div className={`text-center py-8 rounded-2xl ${gradeBg(report.dealScore)}`}>
-        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Audit Results</p>
+      <div className={`text-center py-6 rounded-2xl instrument-panel p-6 ${gradeBg(report.dealScore)}`}>
+        <p className="text-xs uppercase tracking-wider text-muted-foreground font-instrument mb-2">Audit Results</p>
         <AnimatedScore grade={report.dealScore} />
         <p className="text-sm text-muted-foreground mt-3">
           {redCount > 0 && <span className="text-destructive font-medium">{redCount} issue{redCount > 1 ? "s" : ""} to push back on</span>}
