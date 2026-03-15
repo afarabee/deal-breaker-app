@@ -20,12 +20,12 @@ interface CurrencyInputProps {
 const CurrencyInput = ({ value, onChange, placeholder, error, onMicClick, isListening }: CurrencyInputProps) => (
   <div>
     <div className="relative field-glow rounded-md">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-instrument">$</span>
       <Input
         value={formatWithCommas(value)}
         onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
         placeholder={placeholder}
-        className={`pl-7 ${onMicClick ? "pr-16" : "pr-9"} bg-input border-input-border input-glow focus:border-primary ${error ? "border-destructive" : ""}`}
+        className={`pl-7 ${onMicClick ? "pr-16" : "pr-9"} bg-input border-input-border input-glow focus:border-primary font-instrument text-sm tracking-wider ${error ? "border-destructive" : ""}`}
       />
       {onMicClick && (
         <button
