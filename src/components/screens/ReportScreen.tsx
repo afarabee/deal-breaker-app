@@ -263,7 +263,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }}
-              className={`rounded-xl border border-border bg-card p-4 border-l-[3px] ${c.border}`}
+              className={`rounded-xl border border-border instrument-panel p-4 border-l-[3px] ${c.border}`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-semibold text-foreground">{item.name}</span>
