@@ -55,23 +55,7 @@ const gradeBg = (grade: string) => {
 };
 
 const AnimatedScore = ({ grade }: { grade: string }) => {
-  const [show, setShow] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setShow(true), 300);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <motion.div
-      initial={{ scale: 0.3, opacity: 0 }}
-      animate={show ? { scale: 1, opacity: 1 } : {}}
-      transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      className="flex items-center justify-center gap-3"
-    >
-      <span className={`text-7xl font-heading ${gradeColor(grade)}`}>{grade}</span>
-      <span className="text-5xl">{gradeEmoji(grade)}</span>
-    </motion.div>
-  );
+  return <SpeedometerGauge grade={grade} />;
 };
 
 const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, onEditDeal, onStartOver, onCompare }: Props) => {
