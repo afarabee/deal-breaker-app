@@ -87,73 +87,118 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
     return () => clearTimeout(timer);
   }, [loading]);
 
-  // Loading state
+  // Loading state — RPM Tachometer
   if (loading) {
+    const cx = 120, cy = 110, r = 85;
+    const startAngle = Math.PI * 0.8;
+    const endAngle = Math.PI * 2.2;
+    const totalSweep = endAngle - startAngle;
+
+    const rpmZones = [
+      { start: 0, end: 0.55, color: "hsl(var(--success))" },
+      { start: 0.55, end: 0.78, color: "hsl(var(--warning))" },
+      { start: 0.78, end: 1, color: "hsl(var(--destructive))" },
+    ];
+
+    const describeArc = (s: number, e: number, radius: number) => {
+      const x1 = cx + radius * Math.cos(s);
+      const y1 = cy + radius * Math.sin(s);
+      const x2 = cx + radius * Math.cos(e);
+      const y2 = cy + radius * Math.sin(e);
+      const large = e - s > Math.PI ? 1 : 0;
+      return `M ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2}`;
+    };
+
+    const rpmLabels = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    const ticks = rpmLabels.map((v) => {
+      const frac = v / 8;
+      const angle = startAngle + frac * totalSweep;
+      const innerR = r - 10;
+      const outerR = r + 2;
+      const labelR = r - 22;
+      return {
+        x1: cx + innerR * Math.cos(angle), y1: cy + innerR * Math.sin(angle),
+        x2: cx + outerR * Math.cos(angle), y2: cy + outerR * Math.sin(angle),
+        lx: cx + labelR * Math.cos(angle), ly: cy + labelR * Math.sin(angle),
+        label: v,
+      };
+    });
+
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center py-20 space-y-6"
+        className="flex flex-col items-center justify-center py-16 space-y-5"
       >
-        {/* Animation Scene */}
-        <div className="relative w-64 h-56 flex items-center justify-center">
-          <motion.div
-            className="absolute w-28 h-36 bg-card border border-border rounded-lg shadow-lg flex flex-col items-center justify-center gap-2 p-3"
-            style={{ bottom: 8, left: 32 }}
-            animate={{
-              rotate: [0, 0, -2, 2, -1, 0],
-              scale: [1, 1, 0.96, 1.01, 0.99, 1],
-            }}
-            transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="w-full h-1.5 bg-muted rounded-full" />
-            <div className="w-3/4 h-1.5 bg-muted rounded-full" />
-            <div className="w-full h-1.5 bg-muted rounded-full" />
-            <div className="w-2/3 h-1.5 bg-muted rounded-full" />
-            <div className="w-full h-1.5 bg-muted rounded-full" />
-            <div className="mt-2 w-1/2 h-0.5 bg-destructive/40 rounded-full" />
-          </motion.div>
+        <div className="instrument-panel rounded-full p-4" style={{ boxShadow: "0 0 40px hsl(var(--primary) / 0.15), inset 0 0 30px hsl(220 30% 5% / 0.6)" }}>
+          <svg viewBox="0 0 240 230" className="w-56 h-auto">
+            {/* Background arc */}
+            <path d={describeArc(startAngle, endAngle, r)} fill="none" stroke="hsl(var(--muted) / 0.3)" strokeWidth="6" />
 
-          <motion.div
-            className="absolute"
-            style={{ top: -16, right: 16, transformOrigin: "bottom center" }}
-            animate={{ rotate: [-50, -50, 10, -50] }}
-            transition={{
-              duration: 1.1,
-              repeat: Infinity,
-              ease: "easeInOut",
-              times: [0, 0.35, 0.55, 1],
-            }}
-          >
-            <div className="w-14 h-8 bg-muted-foreground rounded-md shadow-md -ml-5" />
-            <div className="w-2.5 h-28 bg-warning rounded-full mx-auto -mt-1" />
-          </motion.div>
+            {/* Color zones */}
+            {rpmZones.map((zone, i) => (
+              <path
+                key={i}
+                d={describeArc(startAngle + zone.start * totalSweep, startAngle + zone.end * totalSweep, r)}
+                fill="none" stroke={zone.color} strokeWidth="6" strokeLinecap="round" opacity={0.5}
+              />
+            ))}
 
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2.5 h-2.5 rounded-full bg-destructive"
-              style={{
-                bottom: 44 + (i - 1) * 14,
-                left: 52 + (i - 1) * 12,
-              }}
+            {/* Tick marks & labels */}
+            {ticks.map((t, i) => (
+              <g key={i}>
+                <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="hsl(var(--muted-foreground) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+                <text x={t.lx} y={t.ly} textAnchor="middle" dominantBaseline="central" fill="hsl(var(--muted-foreground))" fontSize="9" fontFamily="Orbitron, sans-serif">{t.label}</text>
+              </g>
+            ))}
+
+            {/* Animated sweeping needle */}
+            <motion.line
+              x1={cx} y1={cy}
+              x2={cx + (r - 18) * Math.cos(startAngle)}
+              y2={cy + (r - 18) * Math.sin(startAngle)}
+              stroke="hsl(var(--destructive))"
+              strokeWidth="2.5" strokeLinecap="round"
               animate={{
-                scale: [0, 0, 1.5, 0],
-                opacity: [0, 0, 1, 0],
+                x2: [
+                  cx + (r - 18) * Math.cos(startAngle),
+                  cx + (r - 18) * Math.cos(startAngle + totalSweep * 0.85),
+                  cx + (r - 18) * Math.cos(startAngle + totalSweep * 0.4),
+                  cx + (r - 18) * Math.cos(startAngle + totalSweep * 0.95),
+                  cx + (r - 18) * Math.cos(startAngle + totalSweep * 0.6),
+                  cx + (r - 18) * Math.cos(startAngle),
+                ],
+                y2: [
+                  cy + (r - 18) * Math.sin(startAngle),
+                  cy + (r - 18) * Math.sin(startAngle + totalSweep * 0.85),
+                  cy + (r - 18) * Math.sin(startAngle + totalSweep * 0.4),
+                  cy + (r - 18) * Math.sin(startAngle + totalSweep * 0.95),
+                  cy + (r - 18) * Math.sin(startAngle + totalSweep * 0.6),
+                  cy + (r - 18) * Math.sin(startAngle),
+                ],
               }}
-              transition={{
-                duration: 1.1,
-                repeat: Infinity,
-                ease: "easeOut",
-                times: [0, 0.54, 0.6, 0.75],
-              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ filter: "drop-shadow(0 0 6px hsl(var(--destructive) / 0.6))" }}
             />
-          ))}
+
+            {/* Hub */}
+            <circle cx={cx} cy={cy} r="7" fill="hsl(var(--foreground))" />
+            <circle cx={cx} cy={cy} r="3.5" fill="hsl(var(--card))" />
+
+            {/* RPM label */}
+            <text x={cx} y={cy + 30} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="7" fontFamily="Orbitron, sans-serif" letterSpacing="2">RPM x1000</text>
+          </svg>
         </div>
 
         <div className="text-center space-y-1">
-          <span className="text-lg text-foreground font-medium">Breaking down your deal...</span>
-          <p className="text-sm text-muted-foreground">Our AI is auditing every line item</p>
+          <motion.span
+            className="text-lg text-foreground font-instrument tracking-wide"
+            animate={{ opacity: [1, 0.5, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            Analyzing deal...
+          </motion.span>
+          <p className="text-sm text-muted-foreground">Revving up the audit engine</p>
         </div>
 
         {showTimeout && (
