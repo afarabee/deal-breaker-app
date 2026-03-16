@@ -4,7 +4,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Printer, GitCompareArrows, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
-import SpeedometerGauge from "@/components/SpeedometerGauge";
+import TrafficLight from "@/components/TrafficLight";
 
 interface Props {
   report: DealReport | null;
