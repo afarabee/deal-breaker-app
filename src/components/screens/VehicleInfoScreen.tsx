@@ -92,7 +92,7 @@ const VehicleInfoScreen = ({ data, onChange, onNext, onPresetSelect, onPresetCom
       <div className="space-y-2">
         <button
           onClick={() => setShowDemos(!showDemos)}
-          className="text-xs text-muted-foreground hover:text-primary transition-colors"
+          className="text-xs font-semibold px-3 py-1.5 rounded-full border border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
         >
           {showDemos ? "Hide demos ↑" : "Try a demo →"}
         </button>
