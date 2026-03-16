@@ -279,7 +279,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
       </div>
 
       {/* Three-Lever Summary */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="space-y-3">
         {leverData.map((lever, i) => {
           const c = statusColor(lever.status);
           return (
