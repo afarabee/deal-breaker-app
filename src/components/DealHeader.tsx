@@ -15,7 +15,7 @@ interface DealHeaderProps {
   onHistoryDelete?: (id: string) => void;
 }
 
-const STEP_LABELS = ["Vehicle", "Briefing", "Numbers", "Fees", "Report"];
+const STEP_LABELS = ["VEH", "BRIEF", "NUM", "FEE", "RPT"];
 
 const GaugeProgress = ({ currentStep }: { currentStep: number }) => {
   const totalSteps = 5;
