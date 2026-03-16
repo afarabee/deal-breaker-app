@@ -62,7 +62,7 @@ const TrafficLight = ({ grade }: TrafficLightProps) => {
 
       {/* Grade text below */}
       <motion.span
-        className="text-2xl font-heading font-bold"
+        className="text-2xl font-heading font-bold drop-shadow-md"
         style={{
           color: active === "green" ? "hsl(var(--success))" : active === "yellow" ? "hsl(var(--warning))" : "hsl(var(--destructive))",
         }}
