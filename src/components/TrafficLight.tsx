@@ -64,7 +64,7 @@ const TrafficLight = ({ grade }: TrafficLightProps) => {
       <motion.span
         className="text-2xl font-heading font-bold"
         style={{
-          color: active === "green" ? "hsl(var(--success))" : active === "yellow" ? "hsl(var(--warning))" : "hsl(var(--destructive))",
+          color: "hsl(var(--foreground))",
         }}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={show ? { opacity: 1, scale: 1 } : {}}
