@@ -279,7 +279,7 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
       </div>
 
       {/* Three-Lever Summary */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="space-y-3">
         {leverData.map((lever, i) => {
           const c = statusColor(lever.status);
           return (
@@ -288,10 +288,13 @@ const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, o
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.3 }}
-              className={`rounded-xl border p-3 text-center instrument-panel ${lever.color}`}
+              className={`rounded-xl border p-4 instrument-panel ${lever.color}`}
             >
-              <p className="text-xs font-instrument font-semibold mb-1">{lever.label}</p>
-              <p className="text-sm font-instrument text-muted-foreground readout">{lever.value}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-instrument font-semibold">{lever.label}</p>
+                <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${lever.status === "red" ? "bg-destructive" : lever.status === "yellow" ? "bg-warning" : "bg-success"}`} />
+              </div>
+              <p className="text-sm font-instrument text-muted-foreground readout mt-1">{lever.value}</p>
             </motion.div>
           );
         })}
