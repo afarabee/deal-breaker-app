@@ -25,7 +25,7 @@ const CurrencyInput = ({ value, onChange, placeholder, error, onMicClick, isList
         value={formatWithCommas(value)}
         onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
         placeholder={placeholder}
-        className={`pl-7 ${onMicClick ? "pr-16" : "pr-9"} bg-input border-input-border input-glow focus:border-primary font-instrument text-sm tracking-wider ${error ? "border-destructive" : ""}`}
+        className={`pl-7 ${onMicClick ? "pr-16" : "pr-9"} bg-input border-input-border input-glow focus:border-primary font-instrument text-xs tracking-wide ${error ? "border-destructive" : ""}`}
       />
       {onMicClick && (
         <button
