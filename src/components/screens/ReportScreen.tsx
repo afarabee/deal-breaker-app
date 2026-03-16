@@ -55,7 +55,7 @@ const gradeBg = (grade: string) => {
 };
 
 const AnimatedScore = ({ grade }: { grade: string }) => {
-  return <SpeedometerGauge grade={grade} />;
+  return <TrafficLight grade={grade} />;
 };
 
 const ReportScreen = ({ report, loading, analysisError, errorMessage, onRetry, onEditDeal, onStartOver, onCompare }: Props) => {
